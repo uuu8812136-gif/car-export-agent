@@ -33,13 +33,19 @@ def inject_css() -> None:
 
         #MainMenu { visibility: hidden; }
         footer { visibility: hidden; }
-        /* Keep header visible — it contains the sidebar collapse button */
-        header { visibility: visible; background: transparent; }
-        header [data-testid="stToolbar"] { visibility: hidden; }
-        /* Always show sidebar collapse/expand button */
-        [data-testid="collapsedControl"] {
-            visibility: visible !important;
-            display: flex !important;
+        /* 完全隐藏顶部工具栏，消除占位空间 */
+        header[data-testid="stHeader"] {
+            height: 0 !important;
+            min-height: 0 !important;
+            padding: 0 !important;
+            visibility: hidden !important;
+        }
+        /* 消除 header 留下的 padding */
+        .stApp > div:first-child {
+            margin-top: 0 !important;
+        }
+        .block-container {
+            padding-top: 1rem !important;
         }
 
         [data-testid="stSidebar"] {
