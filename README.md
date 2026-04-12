@@ -1,19 +1,21 @@
-# 汽车出口销售 AI Agent
+<div align="center">
 
-> 面向汽车出口贸易公司的 WhatsApp 全自动销售助手，集成三步自反思防幻觉架构
->
-> *An AI-powered WhatsApp sales agent for automotive export companies, featuring a three-step self-reflection pipeline to prevent hallucination.*
+# 🚗 Auto Export AI Agent
 
----
+**The only open-source WhatsApp sales agent built for Chinese automotive exporters**
 
-![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
-![LangGraph](https://img.shields.io/badge/LangGraph-StateGraph-orange)
-![LangChain](https://img.shields.io/badge/LangChain-LLM_Chain-yellow)
-![ChromaDB](https://img.shields.io/badge/ChromaDB-ONNX_Embeddings-green)
-![FastAPI](https://img.shields.io/badge/FastAPI-Webhook-009688?logo=fastapi)
-![Streamlit](https://img.shields.io/badge/Streamlit-Demo_UI-FF4B4B?logo=streamlit)
-![SQLite](https://img.shields.io/badge/SQLite-TTL_Cache-003B57?logo=sqlite)
-![RapidFuzz](https://img.shields.io/badge/RapidFuzz-Fuzzy_Match-blueviolet)
+*Powered by LangGraph · Three-Step Hallucination Guard · Human-in-the-Loop*
+
+[![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python&logoColor=white)](https://python.org)
+[![LangGraph](https://img.shields.io/badge/LangGraph-0.3+-orange?logo=chainlink)](https://github.com/langchain-ai/langgraph)
+[![LangSmith](https://img.shields.io/badge/LangSmith-Traced-green?logo=langchain)](https://smith.langchain.com)
+[![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_DB-purple)](https://trychroma.com)
+[![Streamlit](https://img.shields.io/badge/Streamlit-Demo-red?logo=streamlit)](https://streamlit.io)
+[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+
+[**Live Demo**](#quick-start) · [**Architecture**](#系统架构) · [**Documentation**](docs/integration_guide.md)
+
+</div>
 
 ---
 
@@ -27,58 +29,35 @@
 
 ## 系统架构
 
-```
-WhatsApp 消息（海外买家）
-        │
-        ▼
-┌─────────────────────┐
-│   Green API Webhook  │  ← FastAPI server.py 接收
-│   /whatsapp/handler  │
-└─────────┬───────────┘
-          │
-          ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                    LangGraph 状态机（graph.py）                  │
-│                                                                  │
-│  ┌──────────────┐                                                │
-│  │ intent_node  │ ← 意图分类：price/product/contract/general     │
-│  └──────┬───────┘                                                │
-│         │                                                        │
-│    ┌────┴──────────────────────────────────┐                    │
-│    │                 │                     │                     │
-│    ▼                 ▼                     ▼                     │
-│ ┌──────────┐  ┌────────────┐  ┌────────────────────┐           │
-│ │price_node│  │  rag_node  │  │  contract_node     │           │
-│ │RapidFuzz │  │ ChromaDB   │  │  模板填充 + 提取   │           │
-│ │区间筛选  │  │ ONNX embed │  └────────┬───────────┘           │
-│ │二次检索  │  └─────┬──────┘           │                        │
-│ └────┬─────┘        │                  │                        │
-│      │         ┌────┴──────┐           │                        │
-│      │         │ doc_grader│ CRAG 相关性│                        │
-│      │         │ 低分重写  │ 评分       │                        │
-│      │         └────┬──────┘           │                        │
-│      └──────────────┴──────────────────┘                        │
-│                          │                                       │
-│                          ▼                                       │
-│              ┌───────────────────────┐                          │
-│              │  reflection_pipeline  │  ← 三步自反思            │
-│              │  Step1: 事实核查      │                          │
-│              │  Step2: 合规检查      │                          │
-│              │  Step3: 关联推荐      │                          │
-│              └───────────┬───────────┘                          │
-│                          │                                       │
-│              ┌───────────┴───────────┐                          │
-│              │ 置信度 < 70%?         │                          │
-│              │   是 → HITL 暂停      │                          │
-│              │   否 → 直接发送       │                          │
-│              └───────────────────────┘                          │
-└─────────────────────────────────────────────────────────────────┘
-          │                        │
-          ▼                        ▼
-   ┌────────────┐          ┌──────────────────┐
-   │ WhatsApp   │          │  Streamlit 演示   │
-   │ 自动回复   │          │  app.py           │
-   └────────────┘          └──────────────────┘
+```mermaid
+flowchart TD
+    A[📱 WhatsApp / Web Inquiry] --> B[Intent Router]
+    
+    B -->|price_query| C[💰 Price Node\nRapidFuzz + CSV + Cache]
+    B -->|product_info| D[📚 RAG Node\nHybrid Search + HyDE]
+    B -->|contract_request| E[📋 Contract Node\nTemplate + Auto-fill]
+    B -->|general_chat| F[💬 General Chat]
+    
+    C --> G[🔄 Three-Step Reflection]
+    D --> H[📊 Doc Grader\nCRAG Quality Check]
+    H --> G
+    E --> G
+    F --> G
+    
+    G -->|Step 1: Fact Check| G
+    G -->|Step 2: Compliance| G  
+    G -->|Step 3: Upsell| G
+    
+    G -->|confidence < 70%| I[👤 Human-in-the-Loop\nSales Override]
+    G -->|passed| J[✅ Final Response]
+    I --> J
+    
+    J --> K[📤 WhatsApp Reply]
+    
+    style A fill:#25D366,color:#fff
+    style I fill:#FF9500,color:#fff
+    style J fill:#34C759,color:#fff
+    style G fill:#007AFF,color:#fff
 ```
 
 ---
@@ -214,6 +193,8 @@ WhatsApp 消息（海外买家）
 ### 为什么这比"在 prompt 里加约束"更可靠
 
 直接在 prompt 里写"不要给错误价格"属于**软约束**，LLM 在复杂对话中很容易忘记或绕过。三步自反思是**硬校验**：每一步都是独立的 LLM 调用，专门扮演"挑错者"角色，用对立视角审查主模型的输出，可靠性高一个数量级。
+
+---
 
 ---
 
@@ -392,5 +373,18 @@ Agent 运行中 → 遇到 interrupt() → 执行暂停（状态保存到 checkp
 | 🟢 低 | **多租户隔离** | 多家贸易公司共用时需要数据隔离，当前单租户架构 |
 
 > RapidFuzz 的存在理由：车型名称（如"比亚迪海豹" vs "BYD Seal"）是固定字符串匹配场景，语义向量检索在此场景反而容易产生误匹配。模糊匹配和语义检索各司其职，前者处理车型名，后者处理产品参数和知识库内容。
+
+---
+
+## License
+
+MIT License — 可自由使用、修改、商用。详见 [LICENSE](LICENSE)。
+
+## Contributing
+
+欢迎 PR 和 Issue：
+- 新增车型数据：修改 `data/prices.csv`
+- 新增语言支持：在 `config/prompts.py` 添加多语言 prompt
+- 集成新的 CRM：扩展 `server.py` 的 `/api/contract-export` 端点
 
 
