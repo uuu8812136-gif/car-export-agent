@@ -52,6 +52,9 @@ def post_rag_router(state: AgentState) -> str:
 def hallucination_retry_router(state: AgentState) -> str:
     if state.get("needs_retry", False):
         return intent_router(state)
+    # Route to human intervention if confidence is low or explicitly requested
+    if state.get("needs_human_review", False) or state.get("human_intervention_requested", False):
+        return "human_intervention"
     return "respond"
 
 
@@ -64,6 +67,7 @@ graph.add_node("contract_node", generate_contract)
 graph.add_node("general_chat_node", general_chat)
 graph.add_node("doc_grader", grade_documents)
 graph.add_node("reflection_pipeline", run_reflection_pipeline)
+graph.add_node("human_intervention", check_human_intervention)
 graph.add_node("respond", respond)
 
 graph.add_edge(START, "intent_detector")
@@ -101,16 +105,25 @@ graph.add_conditional_edges(
         "rag_node": "rag_node",
         "contract_node": "contract_node",
         "general_chat_node": "general_chat_node",
+        "human_intervention": "human_intervention",
         "respond": "respond",
     },
 )
 
+graph.add_edge("human_intervention", "respond")
 graph.add_edge("respond", END)
 
-app = graph.compile()
+app = graph.compile(checkpointer=_checkpointer)
 
 
-def run_agent(user_message: str, chat_history: list) -> tuple[str, list[str], dict]:
+def run_agent(
+    user_message: str,
+    chat_history: list,
+    session_id: str = "",
+    user_role: str = "sales",
+    reflection_strictness: str = "normal",
+    human_intervention_requested: bool = False,
+) -> tuple[str, list[str], dict]:
     try:
         normalized_history: list[BaseMessage] = []
 
@@ -134,6 +147,8 @@ def run_agent(user_message: str, chat_history: list) -> tuple[str, list[str], di
             HumanMessage(content=user_message),
         ]
 
+        sid = session_id or str(uuid.uuid4())
+
         initial_state: AgentState = {
             "messages": messages,
             "intent": "",
@@ -147,11 +162,18 @@ def run_agent(user_message: str, chat_history: list) -> tuple[str, list[str], di
             "contract_path": "",
             "agent_steps": [],
             "hallucination_status": "",
+            "price_confidence_score": 0.0,
+            "needs_human_review": False,
             "reflection_log": [],
-            "reflection_strictness": "normal",
+            "reflection_strictness": reflection_strictness,
+            "human_intervention_requested": human_intervention_requested,
+            "intervention_edit": "",
+            "user_role": user_role,
+            "session_id": sid,
         }
 
-        result: AgentState = app.invoke(initial_state)
+        config = {"configurable": {"thread_id": sid}}
+        result: AgentState = app.invoke(initial_state, config=config)
 
         response_text = ""
         for message in reversed(result.get("messages", [])):
@@ -163,6 +185,11 @@ def run_agent(user_message: str, chat_history: list) -> tuple[str, list[str], di
                     response_text = str(content)
                 break
 
+        # Fallback: if graph was interrupted (HITL) before respond node ran,
+        # use draft_answer directly so the caller still gets the pending response
+        if not response_text:
+            response_text = result.get("draft_answer", "")
+
         agent_steps_raw = result.get("agent_steps", [])
         agent_steps: list[str] = [str(step) for step in agent_steps_raw]
 
@@ -170,6 +197,9 @@ def run_agent(user_message: str, chat_history: list) -> tuple[str, list[str], di
             "contract_path": result.get("contract_path", ""),
             "contract_data": result.get("contract_data", {}),
             "hallucination_status": result.get("hallucination_status", ""),
+            "price_confidence_score": result.get("price_confidence_score", 0.0),
+            "reflection_log": result.get("reflection_log", []),
+            "session_id": sid,
         }
 
         return response_text, agent_steps, contract_info

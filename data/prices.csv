@@ -1,0 +1,11 @@
+model_name,brand,variant,fob_price_usd,cif_price_usd,currency,year,available,min_order_qty,notes,product_id,update_time
+BYD Atto 3,BYD,Standard Range,18500,19800,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,BYD-ATTO3-001,2024-01-15
+BYD Seal,BYD,Long Range AWD,24000,25500,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,BYD-SEAL-002,2024-01-15
+BYD Han EV,BYD,600km range,28000,29800,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,BYD-HANEV-003,2024-02-01
+BYD Dolphin,BYD,Standard,14000,15200,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,BYD-DOLPH-004,2024-01-15
+Chery Tiggo 7 Pro,Chery,2.0T,14500,15800,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,CHR-TG7P-005,2024-03-01
+Chery Tiggo 8,Chery,7-seat,16800,18200,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,CHR-TG8-006,2024-03-01
+MG4 Electric,MG,Standard,15200,16400,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,MG-MG4E-007,2024-02-15
+MG ZS EV,MG,Long Range,17500,18900,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,MG-ZSEV-008,2024-02-15
+Geely Coolray,Geely,1.5T,13800,15000,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,GEL-COOL-009,2024-03-15
+SAIC Maxus T90,SAIC,4WD Diesel,22000,23500,USD,2024,true,1,FOB/CIF export pricing for Chinese car export,SAIC-T90-010,2024-03-15
