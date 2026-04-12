@@ -142,11 +142,12 @@ def retrieve_and_answer(state: AgentState) -> dict:
             f"RAG retrieved {len(documents)} chunks from {', '.join(unique_sources)}"
         )
     else:
-        draft_answer = _invoke_llm(
-            user_query,
-            "No relevant product manual content was retrieved from the vector store.",
+        # 知识库为空时不调 LLM，直接给出友好提示并标记需要价格查询兜底
+        draft_answer = (
+            "Our product knowledge base is currently being set up. "
+            "For pricing and availability, please ask about specific models and I'll check our price database directly."
         )
-        agent_steps.append("RAG retrieved 0 chunks from no sources")
+        agent_steps.append("RAG: 知识库为空，已降级提示，建议用户改问价格")
 
     source_tag = (
         "\n\n---\n"

@@ -13,6 +13,8 @@ Rules:
 - Do not explain your reasoning.
 - Do not return JSON.
 - If the user asks about price, quotation, FOB, CIF, discount, payment, MOQ, or shipping cost, return: price_query
+- If the user mentions a budget limit, price range, or asks "what can I get for X USD / under X / between X and Y", return: price_query
+- If the user asks for a recommendation based on budget (e.g. "cheapest", "under $20,000", "within my budget"), return: price_query
 - If the user asks about specifications, features, availability, model comparison, range, engine, battery, dimensions, or brand/model details, return: product_info
 - If the user asks to create, draft, prepare, generate, make, write, revise, or confirm a contract, quotation, quote, proforma invoice, sales agreement, or purchase terms, return: contract_request
 - If the user says "generate a quotation", "make a quote", "send me a contract", "prepare an offer", return: contract_request
@@ -55,6 +57,18 @@ Assistant: contract_request
 
 User: Hello, nice to meet you.
 Assistant: general_chat
+
+User: I need a 7-seat SUV under 20000 USD, what do you have?
+Assistant: price_query
+
+User: What cars can I get for a budget of $15,000 to $18,000 FOB?
+Assistant: price_query
+
+User: Show me your cheapest electric vehicle.
+Assistant: price_query
+
+User: Which models are available within a $25,000 budget?
+Assistant: price_query
 
 User: Can you introduce your company and export experience with Chinese brands?
 Assistant: general_chat
