@@ -1,0 +1,20 @@
+# 本地依赖包（不上传，云端自动安装）
+.pip-packages/
+
+# 运行时
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# 数据库和日志
+data/price_cache.db
+data/intervention_log.json
+data/whatsapp_history.json
+rag/chroma_db/
+
+# 合同输出
+contracts/output/
+
+# 评估结果
+eval/results/

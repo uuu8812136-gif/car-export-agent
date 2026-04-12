@@ -7,19 +7,32 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# 强制覆盖系统环境变量，确保使用项目指定的代理
+# 优先读 Streamlit Cloud secrets，其次读 .env，最后用硬编码默认值
+def _get_secret(key: str, default: str = "") -> str:
+    """读取配置：Streamlit secrets → 环境变量 → 默认值"""
+    try:
+        import streamlit as st
+        val = st.secrets.get(key, "")
+        if val:
+            return str(val)
+    except Exception:
+        pass
+    return os.getenv(key, default)
+
+_PROXY_KEY = _get_secret("OPENAI_API_KEY", "sk-b9ede3798a406b316e96984687f3040d2ac80a723b3cd3681a4d9d776c283336")
+_PROXY_URL = _get_secret("OPENAI_BASE_URL", "https://hk.ticketpro.cc/v1")
+
 import os as _os
-_PROXY_KEY = "sk-b9ede3798a406b316e96984687f3040d2ac80a723b3cd3681a4d9d776c283336"
-_PROXY_URL = "https://hk.ticketpro.cc/v1"
 _os.environ["OPENAI_API_KEY"] = _PROXY_KEY
 _os.environ["OPENAI_BASE_URL"] = _PROXY_URL
 _os.environ["OPENAI_API_BASE"] = _PROXY_URL
 
-# LangSmith 可观测性（设置环境变量后自动启用）
-import os as _lsm_os
-if _lsm_os.getenv("LANGSMITH_API_KEY"):
-    _lsm_os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
-    _lsm_os.environ.setdefault("LANGCHAIN_PROJECT", "car-export-agent")
+# LangSmith 可观测性
+_ls_key = _get_secret("LANGSMITH_API_KEY", "")
+if _ls_key:
+    _os.environ["LANGSMITH_API_KEY"] = _ls_key
+    _os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
+    _os.environ.setdefault("LANGCHAIN_PROJECT", "car-export-agent")
 
 PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent
 
