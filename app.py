@@ -492,17 +492,19 @@ def render_sidebar() -> None:
 
 def render_chat_tab() -> None:
     st.markdown(
-        '<h2 style="font-size:24px;font-weight:700;color:#1C1C1E;margin-bottom:4px">💬 智能询盘对话</h2>'
-        '<p style="color:#8E8E93;font-size:14px;margin-bottom:16px">支持价格查询 · 产品咨询 · 合同生成 · 三层防幻觉保障</p>',
+        '<h2 style="font-size:22px;font-weight:700;color:#1C1C1E;margin-bottom:2px">💬 WhatsApp 询盘模拟对话</h2>'
+        '<p style="color:#8E8E93;font-size:13px;margin-bottom:14px">'
+        '模拟真实 WhatsApp 客户问询 · 车辆知识库问答 · 自动报价 · 合同生成 · 三步防幻觉检查'
+        '</p>',
         unsafe_allow_html=True,
     )
 
     if not st.session_state.messages:
-        st.markdown('<p style="font-weight:600;color:#1C1C1E;font-size:15px">💡 试试这些问句：</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-weight:600;color:#1C1C1E;font-size:14px">💡 模拟客户发来的询盘：</p>', unsafe_allow_html=True)
         examples = [
-            "BYD Seal CIF price to Lagos?",
-            "MG4 Electric driving range?",
-            "Contract: 2x Chery Tiggo 8 to Dubai",
+            "Hi, what's the CIF price of BYD Seal to Lagos port?",
+            "I need a 7-seat SUV under $20,000, what do you have?",
+            "Contract: 2x Chery Tiggo 8 Pro, buyer ABC Trading, Dubai",
         ]
         cols = st.columns(3)
         for col, query in zip(cols, examples):
@@ -733,89 +735,75 @@ def render_whatsapp_tab() -> None:
 
 
 def _render_login_page() -> None:
-    """Full-page centered login card shown before authentication."""
-    st.markdown(
-        """
-        <div style="display:flex;justify-content:center;align-items:flex-start;
-                    padding-top:60px;min-height:80vh;">
-          <div style="width:100%;max-width:420px;">
-            <div style="text-align:center;margin-bottom:32px;">
-              <div style="font-size:64px;margin-bottom:8px;">🚗</div>
-              <div style="font-size:26px;font-weight:700;color:#1C1C1E;margin-bottom:4px;">
-                汽车出口 AI 助手
-              </div>
-              <div style="font-size:14px;color:#8E8E93;">
-                智能询盘 · 价格查询 · 合同生成 · 三层防幻觉
-              </div>
-            </div>
-          </div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # Centered login form using columns
-    _, col_center, _ = st.columns([1, 2, 1])
-    with col_center:
+    """Full-page centered login — no gap, everything in one column."""
+    _, col, _ = st.columns([1, 1.2, 1])
+    with col:
+        # ── Brand header ──
         st.markdown(
-            '<div class="ios-card" style="padding:28px 32px;">',
-            unsafe_allow_html=True,
-        )
-        st.markdown(
-            '<p style="font-size:17px;font-weight:600;color:#1C1C1E;margin-bottom:16px;">登录系统</p>',
-            unsafe_allow_html=True,
-        )
-        name_input = st.text_input("姓名", placeholder="请输入您的姓名", key="login_name_main")
-        role_sel = st.selectbox(
-            "角色",
-            ["👤 销售 (Sales)", "👑 管理员 (Admin)"],
-            key="login_role_main",
-        )
-
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("登 录", use_container_width=True, type="primary", key="login_btn_main"):
-            if name_input.strip():
-                st.session_state.user_name = name_input.strip()
-                st.session_state.user_role = "admin" if "Admin" in role_sel else "sales"
-                st.session_state.logged_in = True
-                st.rerun()
-            else:
-                st.error("请输入姓名")
-
-        st.markdown(
-            '<p style="font-size:12px;color:#8E8E93;text-align:center;margin-top:12px;">'
-            'LangGraph · RapidFuzz · CRAG · 三步反思 · HITL</p>',
-            unsafe_allow_html=True,
-        )
-        st.markdown("</div>", unsafe_allow_html=True)
-
-        # Feature badges
-        st.markdown("<br>", unsafe_allow_html=True)
-        b1, b2, b3 = st.columns(3)
-        b1.markdown(
-            '<div style="background:white;border-radius:12px;padding:12px;text-align:center;'
-            'box-shadow:0 2px 8px rgba(0,0,0,0.06);">'
-            '<div style="font-size:24px;">📊</div>'
-            '<div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-top:4px;">价格查询</div>'
-            '<div style="font-size:11px;color:#8E8E93;">RapidFuzz + 区间筛选</div>'
+            '<div style="text-align:center;padding:32px 0 20px;">'
+            '<div style="font-size:52px;line-height:1;">🚗</div>'
+            '<div style="font-size:22px;font-weight:700;color:#1C1C1E;margin-top:10px;">汽车出口 AI 销售助手</div>'
+            '<div style="font-size:13px;color:#8E8E93;margin-top:4px;">'
+            'WhatsApp 询盘自动回复 · 车辆知识库问答 · 报价合同生成'
+            '</div>'
             '</div>',
             unsafe_allow_html=True,
         )
-        b2.markdown(
-            '<div style="background:white;border-radius:12px;padding:12px;text-align:center;'
-            'box-shadow:0 2px 8px rgba(0,0,0,0.06);">'
-            '<div style="font-size:24px;">🔄</div>'
-            '<div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-top:4px;">三步反思</div>'
-            '<div style="font-size:11px;color:#8E8E93;">事实·合规·追加推荐</div>'
-            '</div>',
-            unsafe_allow_html=True,
-        )
-        b3.markdown(
-            '<div style="background:white;border-radius:12px;padding:12px;text-align:center;'
-            'box-shadow:0 2px 8px rgba(0,0,0,0.06);">'
-            '<div style="font-size:24px;">🛡️</div>'
-            '<div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-top:4px;">人工介入</div>'
-            '<div style="font-size:11px;color:#8E8E93;">HITL · 权限管理</div>'
+
+        # ── Feature row ──
+        f1, f2, f3, f4 = st.columns(4)
+        for col_f, icon, label in [
+            (f1, "📱", "WhatsApp\n接入"),
+            (f2, "🗄️", "车辆数据库\n问答"),
+            (f3, "📋", "报价单\n自动生成"),
+            (f4, "🛡️", "三步反思\n防幻觉"),
+        ]:
+            col_f.markdown(
+                f'<div style="background:white;border-radius:10px;padding:10px 6px;'
+                f'text-align:center;box-shadow:0 1px 6px rgba(0,0,0,0.07);margin-bottom:4px;">'
+                f'<div style="font-size:20px;">{icon}</div>'
+                f'<div style="font-size:10px;font-weight:600;color:#1C1C1E;'
+                f'margin-top:4px;white-space:pre-line;line-height:1.3;">{label}</div>'
+                f'</div>',
+                unsafe_allow_html=True,
+            )
+
+        st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+
+        # ── Login card ──
+        with st.container(border=True):
+            st.markdown(
+                '<p style="font-size:16px;font-weight:600;color:#1C1C1E;margin:0 0 4px;">登录系统</p>',
+                unsafe_allow_html=True,
+            )
+            name_input = st.text_input("姓名", placeholder="请输入您的姓名", key="login_name_main",
+                                       label_visibility="collapsed")
+            st.caption("姓名")
+            role_sel = st.selectbox(
+                "角色",
+                ["👤 销售 (Sales)", "👑 管理员 (Admin)"],
+                key="login_role_main",
+            )
+            if st.button("登 录", use_container_width=True, type="primary", key="login_btn_main"):
+                if name_input.strip():
+                    st.session_state.user_name = name_input.strip()
+                    st.session_state.user_role = "admin" if "Admin" in role_sel else "sales"
+                    st.session_state.logged_in = True
+                    st.rerun()
+                else:
+                    st.error("请输入姓名")
+            st.caption("LangGraph · RapidFuzz · ChromaDB · HITL")
+
+        # ── Scenario description ──
+        st.markdown(
+            '<div style="background:#EFF6FF;border-radius:10px;padding:14px 16px;margin-top:12px;">'
+            '<div style="font-size:12px;font-weight:600;color:#1D4ED8;margin-bottom:6px;">💡 典型使用场景</div>'
+            '<div style="font-size:12px;color:#374151;line-height:1.8;">'
+            '• WhatsApp 客户问「BYD Seal 出口到拉各斯多少钱？」→ 自动回复带 FOB/CIF 报价<br>'
+            '• 客户问「你们有没有 7 座 SUV，预算 2 万美元以内？」→ 从车辆库筛选推荐<br>'
+            '• 客户确认车型 → 自动生成报价合同 PDF<br>'
+            '• 置信度低时暂停，转给人工销售接手'
+            '</div>'
             '</div>',
             unsafe_allow_html=True,
         )
