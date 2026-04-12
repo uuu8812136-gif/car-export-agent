@@ -192,7 +192,8 @@ def query_price(state: AgentState) -> dict[str, Any]:
 
     # --- Price range filtering ---
     min_usd, max_usd = _parse_price_range(user_message)
-    if min_usd is not None or max_usd is not None:
+    has_price_range = min_usd is not None or max_usd is not None
+    if has_price_range:
         df_filtered = _filter_by_price_range(df, min_usd, max_usd)
         agent_steps.append(
             f"Price range filter: USD {min_usd or 'any'}–{max_usd or 'any'} → {len(df_filtered)}/{len(df)} models"
@@ -200,6 +201,33 @@ def query_price(state: AgentState) -> dict[str, Any]:
     else:
         df_filtered = df
     row, score = _fuzzy_match(user_message, df_filtered)
+
+    # --- 价格区间查询但没匹配到具体型号：返回过滤后的完整列表 ---
+    if has_price_range and (row is None or score < 70):
+        lines = [
+            f"Here are the vehicles available"
+            + (f" under USD {int(max_usd):,}" if max_usd and not min_usd else "")
+            + (f" from USD {int(min_usd):,}" if min_usd and not max_usd else "")
+            + (f" between USD {int(min_usd):,}–{int(max_usd):,}" if min_usd and max_usd else "")
+            + ":\n"
+        ]
+        for _, r in df_filtered.iterrows():
+            lines.append(
+                f"• **{r.get('brand','')} {r.get('model_name','')}** ({r.get('variant','')})"
+                f" — FOB: USD {r.get('fob_price_usd','N/A')} | CIF: USD {r.get('cif_price_usd','N/A')}"
+                f"  `{r.get('product_id','')}`"
+            )
+        lines.append(f"\n---\n📊 *{len(df_filtered)} models matched your budget · Reply with a model name to get details or generate a contract.*")
+        draft_answer = "\n".join(lines)
+        price_result = {"match_found": True, "count": len(df_filtered), "cars": df_filtered.to_dict(orient="records")}
+        agent_steps.append(f"Price range list: returned {len(df_filtered)} models")
+        return {
+            "price_result": price_result,
+            "draft_answer": draft_answer,
+            "price_confidence_score": 0.95,
+            "needs_human_review": False,
+            "agent_steps": agent_steps,
+        }
     confidence = score / 100.0  # 0-1 scale for state
 
     # --- Secondary retrieval: if initial score 70-84%, try alternative matching ---
@@ -286,11 +314,11 @@ def query_price(state: AgentState) -> dict[str, Any]:
             "agent_steps": agent_steps,
         }
 
-    # --- score < 70: hard reject ---
+    # --- score < 70: hard reject — 用 df_filtered（已按价格过滤）而非全量 ---
     model_list = "\n".join(
         f"- **{r.get('brand', '')} {r.get('model_name', '')}** "
         f"(FOB: USD {r.get('fob_price_usd', 'N/A')})"
-        for r in df.to_dict(orient="records")
+        for r in df_filtered.to_dict(orient="records")
     )
     draft_answer = (
         "I'm sorry, but the model you inquired about is **not found** "
