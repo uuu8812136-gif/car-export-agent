@@ -42,9 +42,12 @@ def _parse_price_range(text: str) -> tuple[float | None, float | None]:
     )
     m = range_pat.search(text_lower)
     if m:
-        lo = float(m.group(1).replace(",", ""))
-        hi = float(m.group(2).replace(",", ""))
-        return (min(lo, hi), max(lo, hi))
+        try:
+            lo = float(m.group(1).replace(",", ""))
+            hi = float(m.group(2).replace(",", ""))
+            return (min(lo, hi), max(lo, hi))
+        except ValueError:
+            pass
 
     # Pattern: "under/below/less than X"
     under_pat = _re.compile(
@@ -140,7 +143,7 @@ def _fuzzy_match(query: str, df: pd.DataFrame) -> tuple[pd.Series | None, float]
             best_score = brand_best[1]
 
     if best_idx is not None:
-        return df.iloc[best_idx], best_score
+        return df.loc[best_idx], best_score
     return None, 0.0
 
 
@@ -209,7 +212,7 @@ def query_price(state: AgentState) -> dict[str, Any]:
         }
         alt_best = fuzz_process.extractOne(alt_query, full_names, scorer=fuzz.token_sort_ratio, score_cutoff=0)
         if alt_best is not None and alt_best[1] > score:
-            row = df_filtered.iloc[alt_best[2]]
+            row = df_filtered.loc[alt_best[2]]
             score = alt_best[1]
             agent_steps.append(f"Secondary retrieval: improved score to {score:.0f}%")
 

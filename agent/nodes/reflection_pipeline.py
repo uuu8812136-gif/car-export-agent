@@ -43,15 +43,6 @@ class ReflectionLog(BaseModel):
 
 
 # ---------------------------------------------------------------------------
-# Structured-output LLM wrappers
-# ---------------------------------------------------------------------------
-
-fact_check_llm = llm.with_structured_output(FactCheckResult)
-compliance_llm = llm.with_structured_output(ComplianceCheckResult)
-upsell_llm = llm.with_structured_output(UpsellAnalysis)
-
-
-# ---------------------------------------------------------------------------
 # Prompt builders
 # ---------------------------------------------------------------------------
 
@@ -120,6 +111,11 @@ def run_reflection_pipeline(state: AgentState) -> dict[str, Any]:
     draft_answer = str(state.get("draft_answer", "") or "")
     retrieved_context = str(state.get("retrieved_context", "") or "")
     price_result_str = str(state.get("price_result", {}) or {})
+
+    # Initialise structured-output LLMs lazily (avoid import-time API calls)
+    fact_check_llm = llm.with_structured_output(FactCheckResult)
+    compliance_llm = llm.with_structured_output(ComplianceCheckResult)
+    upsell_llm = llm.with_structured_output(UpsellAnalysis)
 
     # Max retries guard
     if current_retry >= 2:

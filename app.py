@@ -229,8 +229,6 @@ def init_session_state() -> None:
         st.session_state.price_confidence = 0.0
     if "intervention_mode" not in st.session_state:
         st.session_state.intervention_mode = False
-    if "pending_response" not in st.session_state:
-        st.session_state.pending_response = ""
 
 
 def normalize_agent_result(result: Any) -> tuple[str, list[str], str | None]:
@@ -398,12 +396,16 @@ def render_sidebar() -> None:
         )
         st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
         if st.button("退出登录", use_container_width=True, key="logout_btn"):
-            st.session_state.logged_in = False
-            st.session_state.user_name = ""
-            st.session_state.user_role = "sales"
-            st.session_state.messages = []
-            st.session_state.agent_steps = []
-            st.session_state.reflection_log = []
+            import uuid as _uuid
+            keys_to_reset = [
+                "logged_in", "user_name", "user_role", "messages",
+                "agent_steps", "reflection_log", "last_contract_path",
+                "hallucination_status", "price_confidence",
+                "intervention_mode", "pending_response",
+            ]
+            for _k in keys_to_reset:
+                st.session_state.pop(_k, None)
+            st.session_state.session_id = str(_uuid.uuid4())
             st.rerun()
 
         # ── 反思严格度控制 ───────────────────────────────

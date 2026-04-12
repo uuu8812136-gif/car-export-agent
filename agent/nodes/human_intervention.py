@@ -61,6 +61,17 @@ def check_human_intervention(state: AgentState) -> dict[str, Any]:
     if edited_text and edited_text != state.get("draft_answer", ""):
         _sync_to_knowledge_base(final_answer, state)
         agent_steps.append("✅ Edited content synced to knowledge base")
+        # Update audit log to mark this entry as synced
+        try:
+            from agent.utils.intervention_log import update_intervention_status
+            update_intervention_status(
+                timestamp=entry.get("timestamp", ""),
+                session_id=state.get("session_id", ""),
+                approved=True,
+                sync_to_kb=True,
+            )
+        except Exception:
+            pass
     else:
         agent_steps.append("✅ Human review completed (no edits)")
 
