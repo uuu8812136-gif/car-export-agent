@@ -886,22 +886,23 @@ def _render_telegram_tab() -> None:
 
     st.markdown(f"**共 {len(records)} 条对话**")
 
-    for rec in reversed(records[-20:]):  # 最新20条
+    recent = records[-20:]
+    for idx, rec in enumerate(reversed(recent)):  # 用 idx 保证 key 唯一
         ts = rec.get("timestamp", "")[:16]
         username = rec.get("username", "unknown")
         user_msg = rec.get("user_message", "")
         agent_reply = rec.get("agent_reply", "")
 
-        with st.expander(f"[{ts}] @{username}: {user_msg[:50]}...", expanded=False):
+        with st.expander(f"[{ts}] @{username}: {user_msg[:50]}", expanded=(idx == 0)):
             col_u, col_a = st.columns(2)
             with col_u:
                 st.markdown("**👤 客户消息**")
                 st.text_area("", value=user_msg, height=100, disabled=True,
-                             key=f"tg_u_{ts}_{username}")
+                             key=f"tg_u_{idx}")
             with col_a:
                 st.markdown("**🤖 Agent 回复**")
                 st.text_area("", value=agent_reply, height=100, disabled=True,
-                             key=f"tg_a_{ts}_{username}")
+                             key=f"tg_a_{idx}")
 
 
 def _render_admin_tab() -> None:
