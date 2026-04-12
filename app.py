@@ -618,7 +618,7 @@ def render_whatsapp_tab() -> None:
         with header_col:
             st.markdown('<h4 style="font-weight:600;color:#1C1C1E;font-size:17px;margin:0">对话记录</h4>', unsafe_allow_html=True)
         with refresh_col:
-            if st.button("🔄", help="刷新对话记录", use_container_width=True):
+            if st.button("🔄", help="刷新对话记录", use_container_width=True, key="wa_refresh"):
                 st.rerun()
 
         _, load_history = _load_whatsapp()
@@ -876,7 +876,7 @@ def _render_telegram_tab() -> None:
 
     col_r, _ = st.columns([1, 4])
     with col_r:
-        if st.button("🔄 刷新", use_container_width=True):
+        if st.button("🔄 刷新", use_container_width=True, key="tg_refresh"):
             st.rerun()
 
     records = load_telegram_history()
@@ -917,7 +917,7 @@ def _render_admin_tab() -> None:
 
     col_r, col_f = st.columns([3, 1])
     with col_f:
-        if st.button("🔄 刷新", use_container_width=True):
+        if st.button("🔄 刷新", use_container_width=True, key="admin_refresh"):
             st.rerun()
 
     logs = load_interventions(user_role="admin")
@@ -943,7 +943,7 @@ def _render_admin_tab() -> None:
     # Batch sync button: sync all approved but not yet synced entries
     pending_sync = [e for e in logs if e.get("approved") is True and not e.get("synced_to_kb")]
     if pending_sync:
-        if st.button(f"📤 批量同步 {len(pending_sync)} 条已批准记录到知识库", type="primary", use_container_width=True):
+        if st.button(f"📤 批量同步 {len(pending_sync)} 条已批准记录到知识库", type="primary", use_container_width=True, key="admin_batch_sync"):
             synced = 0
             for entry in pending_sync:
                 ok = update_intervention_status(
