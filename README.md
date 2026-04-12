@@ -235,7 +235,7 @@ WhatsApp 消息（海外买家）
 
 - **数据安全**：车辆价格、客户询盘属于商业敏感数据，不能上传第三方云服务
 - **零外部 API 依赖**：ONNX 本地 embeddings，断网也能跑
-- **成本**：向量检索零调用费用，适合中小型贸易公司
+
 
 ### 为什么用 RapidFuzz 而不是纯 LLM 做价格匹配
 
@@ -378,25 +378,6 @@ Agent 运行中 → 遇到 interrupt() → 执行暂停（状态保存到 checkp
 
 ---
 
-## 市场背景与项目定位
-
-> 以下数据来自公开市场研究，用于说明本项目所解决问题的真实规模。
-
-**为什么是汽车出口 + WhatsApp？**
-
-- 2025年中国汽车出口预计突破 **620万辆**，东南亚、中东、非洲是主要增量市场
-- 非洲、中东买家高度依赖 WhatsApp 做商业沟通，渗透率远超欧美
-- 真实案例：南非 Cars.co.za 上线 WhatsApp AI 询盘助手后，**购车询盘量激增超过 1000%**
-- 外贸销售普遍面临时差痛点——非洲客户活跃时中国已是深夜，AI 自动回复是刚需
-
-**技术选型的市场依据**
-
-- LangGraph 于2025年正式 GA，已在 LinkedIn、Uber、Elastic 等 **400+ 企业**生产环境运行，是当前复杂 Agent 场景的主流框架
-- HITL（人工介入）是 Gartner 预测2028年 **33% 企业软件**的强制要求方向，不是可选项
-- RAG 论文2024年增长至 **1202篇**（上年93篇），企业 LLM 应用中占30-60%，自反思架构（Self-RAG）是当前前沿实践
-
----
-
 ## 已知局限与后续计划
 
 这个项目是工程演示级别，离完整生产部署还差以下几项，按优先级列出：
@@ -412,30 +393,4 @@ Agent 运行中 → 遇到 interrupt() → 执行暂停（状态保存到 checkp
 
 > RapidFuzz 的存在理由：车型名称（如"比亚迪海豹" vs "BYD Seal"）是固定字符串匹配场景，语义向量检索在此场景反而容易产生误匹配。模糊匹配和语义检索各司其职，前者处理车型名，后者处理产品参数和知识库内容。
 
----
-
-## 对接说明
-
-### 企业知识库对接
-
-将现有车型 PDF 文档（配置手册、规格书）放入项目目录后运行入库脚本：
-
-```bash
-python rag/ingest.py --source ./docs/vehicle_specs/ --collection car_knowledge
-```
-
-支持增量更新，已入库文档不重复处理。
-
-### WhatsApp 对接（Green API）
-
-1. 在 [Green API](https://green-api.com) 注册账号，获取 `instance_id` 和 `api_token`
-2. 填入 `.env` 对应字段
-3. 在 Green API 控制台将 webhook URL 配置为 `https://your-domain/whatsapp/webhook`
-4. 详细步骤见 `docs/integration_guide.md`
-
-### CRM 对接
-
-`contract_node.py` 提取的结构化字段（买方名称、车型、数量、价格、港口）通过标准 JSON 格式输出，可直接接入 Salesforce / 金蝶 / 自建 CRM 的 REST API。在 `server.py` 中扩展 `/api/contract-export` 端点即可。
-
----
 
