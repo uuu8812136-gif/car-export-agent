@@ -6,8 +6,18 @@ from typing import Any
 
 import streamlit as st
 
-from agent.graph import run_agent
-from whatsapp.handler import handle_incoming, load_history
+
+@st.cache_resource(show_spinner=False)
+def _load_agent():
+    """Import and compile the LangGraph agent once, cache across reruns."""
+    from agent.graph import run_agent
+    return run_agent
+
+
+@st.cache_resource(show_spinner=False)
+def _load_whatsapp():
+    from whatsapp.handler import handle_incoming, load_history
+    return handle_incoming, load_history
 
 st.set_page_config(page_title="汽车出口AI助手", page_icon="🚗", layout="wide", initial_sidebar_state="expanded")
 
@@ -314,6 +324,7 @@ def get_hallucination_badge_html(status: str) -> str:
 
 def run_agent_and_update(user_message: str, history: list) -> None:
     try:
+        run_agent = _load_agent()
         raw = run_agent(
             user_message,
             history,
@@ -368,31 +379,26 @@ def render_sidebar() -> None:
             unsafe_allow_html=True,
         )
 
-        # ── 角色登录 ────────────────────────────────────
+        # ── 用户信息 ─────────────────────────────────────
         st.markdown("---")
-        if not st.session_state.logged_in:
-            st.markdown("**👤 身份登录**")
-            name_input = st.text_input("姓名", placeholder="输入你的名字", key="login_name")
-            role_sel = st.selectbox("角色", ["sales — 销售", "admin — 管理员"], key="login_role")
-            if st.button("登录", use_container_width=True, key="login_btn"):
-                if name_input.strip():
-                    st.session_state.user_name = name_input.strip()
-                    st.session_state.user_role = "admin" if "admin" in role_sel else "sales"
-                    st.session_state.logged_in = True
-                    st.rerun()
-        else:
-            role_icon = "👑" if st.session_state.user_role == "admin" else "👤"
-            st.markdown(
-                f'<div style="background:#F2F2F7;border-radius:10px;padding:8px 12px;font-size:13px">'
-                f'{role_icon} <b>{st.session_state.user_name}</b> '
-                f'<span style="color:#8E8E93">({st.session_state.user_role})</span></div>',
-                unsafe_allow_html=True,
-            )
-            if st.button("退出登录", use_container_width=True, key="logout_btn"):
-                st.session_state.logged_in = False
-                st.session_state.user_name = ""
-                st.session_state.user_role = "sales"
-                st.rerun()
+        role_icon = "👑" if st.session_state.user_role == "admin" else "👤"
+        st.markdown(
+            f'<div style="background:#F2F2F7;border-radius:10px;padding:10px 14px;font-size:13px;">'
+            f'<span style="font-size:16px">{role_icon}</span> '
+            f'<b style="color:#1C1C1E">{st.session_state.user_name}</b>'
+            f'<span style="color:#8E8E93;margin-left:6px">({st.session_state.user_role})</span>'
+            f'</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown("<div style='height:6px'></div>", unsafe_allow_html=True)
+        if st.button("退出登录", use_container_width=True, key="logout_btn"):
+            st.session_state.logged_in = False
+            st.session_state.user_name = ""
+            st.session_state.user_role = "sales"
+            st.session_state.messages = []
+            st.session_state.agent_steps = []
+            st.session_state.reflection_log = []
+            st.rerun()
 
         # ── 反思严格度控制 ───────────────────────────────
         st.markdown("---")
@@ -605,6 +611,7 @@ def render_whatsapp_tab() -> None:
             if st.button("🔄", help="刷新对话记录", use_container_width=True):
                 st.rerun()
 
+        _, load_history = _load_whatsapp()
         messages = load_history()
 
         if not messages:
@@ -694,6 +701,7 @@ def render_whatsapp_tab() -> None:
                 }
                 try:
                     with st.spinner("处理中..."):
+                        handle_incoming, _ = _load_whatsapp()
                         result = handle_incoming(fake_payload)
                     st.success("✅ 消息处理成功")
                     resp = (
@@ -724,13 +732,108 @@ def render_whatsapp_tab() -> None:
         st.markdown("</div>", unsafe_allow_html=True)
 
 
+def _render_login_page() -> None:
+    """Full-page centered login card shown before authentication."""
+    st.markdown(
+        """
+        <div style="display:flex;justify-content:center;align-items:flex-start;
+                    padding-top:60px;min-height:80vh;">
+          <div style="width:100%;max-width:420px;">
+            <div style="text-align:center;margin-bottom:32px;">
+              <div style="font-size:64px;margin-bottom:8px;">🚗</div>
+              <div style="font-size:26px;font-weight:700;color:#1C1C1E;margin-bottom:4px;">
+                汽车出口 AI 助手
+              </div>
+              <div style="font-size:14px;color:#8E8E93;">
+                智能询盘 · 价格查询 · 合同生成 · 三层防幻觉
+              </div>
+            </div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Centered login form using columns
+    _, col_center, _ = st.columns([1, 2, 1])
+    with col_center:
+        st.markdown(
+            '<div class="ios-card" style="padding:28px 32px;">',
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            '<p style="font-size:17px;font-weight:600;color:#1C1C1E;margin-bottom:16px;">登录系统</p>',
+            unsafe_allow_html=True,
+        )
+        name_input = st.text_input("姓名", placeholder="请输入您的姓名", key="login_name_main")
+        role_sel = st.selectbox(
+            "角色",
+            ["👤 销售 (Sales)", "👑 管理员 (Admin)"],
+            key="login_role_main",
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("登 录", use_container_width=True, type="primary", key="login_btn_main"):
+            if name_input.strip():
+                st.session_state.user_name = name_input.strip()
+                st.session_state.user_role = "admin" if "Admin" in role_sel else "sales"
+                st.session_state.logged_in = True
+                st.rerun()
+            else:
+                st.error("请输入姓名")
+
+        st.markdown(
+            '<p style="font-size:12px;color:#8E8E93;text-align:center;margin-top:12px;">'
+            'LangGraph · RapidFuzz · CRAG · 三步反思 · HITL</p>',
+            unsafe_allow_html=True,
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
+
+        # Feature badges
+        st.markdown("<br>", unsafe_allow_html=True)
+        b1, b2, b3 = st.columns(3)
+        b1.markdown(
+            '<div style="background:white;border-radius:12px;padding:12px;text-align:center;'
+            'box-shadow:0 2px 8px rgba(0,0,0,0.06);">'
+            '<div style="font-size:24px;">📊</div>'
+            '<div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-top:4px;">价格查询</div>'
+            '<div style="font-size:11px;color:#8E8E93;">RapidFuzz + 区间筛选</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+        b2.markdown(
+            '<div style="background:white;border-radius:12px;padding:12px;text-align:center;'
+            'box-shadow:0 2px 8px rgba(0,0,0,0.06);">'
+            '<div style="font-size:24px;">🔄</div>'
+            '<div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-top:4px;">三步反思</div>'
+            '<div style="font-size:11px;color:#8E8E93;">事实·合规·追加推荐</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+        b3.markdown(
+            '<div style="background:white;border-radius:12px;padding:12px;text-align:center;'
+            'box-shadow:0 2px 8px rgba(0,0,0,0.06);">'
+            '<div style="font-size:24px;">🛡️</div>'
+            '<div style="font-size:12px;font-weight:600;color:#1C1C1E;margin-top:4px;">人工介入</div>'
+            '<div style="font-size:11px;color:#8E8E93;">HITL · 权限管理</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
+
+
 def main() -> None:
     inject_css()
     init_session_state()
+
+    # ── 登录拦截：未登录先显示登录页 ──────────────────────
+    if not st.session_state.logged_in:
+        _render_login_page()
+        return
+
     render_sidebar()
 
     tabs = ["💬  在线询盘", "📱  WhatsApp"]
-    if st.session_state.get("user_role") == "admin" and st.session_state.get("logged_in"):
+    if st.session_state.get("user_role") == "admin":
         tabs.append("🔍  介入审查")
 
     tab_results = st.tabs(tabs)

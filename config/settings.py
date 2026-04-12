@@ -4,23 +4,6 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
-from langchain_openai import ChatOpenAI
-from langchain_core.embeddings import Embeddings
-from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as _ChromaEF
-
-
-class _ChromaEmbeddings(Embeddings):
-    """LangChain-compatible wrapper around ChromaDB's built-in ONNX embeddings.
-    Avoids loading sentence-transformers / torch — much lighter on memory."""
-
-    def __init__(self) -> None:
-        self._ef = _ChromaEF()
-
-    def embed_documents(self, texts: list[str]) -> list[list[float]]:
-        return [[float(v) for v in vec] for vec in self._ef(texts)]
-
-    def embed_query(self, text: str) -> list[float]:
-        return [float(v) for v in self._ef([text])[0]]
 
 load_dotenv()
 
@@ -44,21 +27,73 @@ PRICES_CSV_PATH.parent.mkdir(parents=True, exist_ok=True)
 CONTRACTS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 CONTRACTS_TEMPLATE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
-# LLM — GPT-5.4 via proxy
+# LLM 配置（懒加载：模块导入时不实例化，等首次调用时才创建）
 OPENAI_API_KEY: str = os.getenv(
     "OPENAI_API_KEY",
     "sk-b9ede3798a406b316e96984687f3040d2ac80a723b3cd3681a4d9d776c283336",
 )
 OPENAI_BASE_URL: str = os.getenv("OPENAI_BASE_URL", "https://hk.ticketpro.cc/v1")
 
-llm: ChatOpenAI = ChatOpenAI(
-    model="gpt-5.4",
-    api_key=OPENAI_API_KEY,
-    base_url=OPENAI_BASE_URL,
-    temperature=0,
-)
+_llm_instance = None
+_embeddings_instance = None
 
-embeddings: _ChromaEmbeddings = _ChromaEmbeddings()
+
+def _get_llm():
+    global _llm_instance
+    if _llm_instance is None:
+        from langchain_openai import ChatOpenAI
+        _llm_instance = ChatOpenAI(
+            model="gpt-5.4",
+            api_key=OPENAI_API_KEY,
+            base_url=OPENAI_BASE_URL,
+            temperature=0,
+        )
+    return _llm_instance
+
+
+def _get_embeddings():
+    global _embeddings_instance
+    if _embeddings_instance is None:
+        from langchain_core.embeddings import Embeddings
+        from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as _ChromaEF
+
+        class _ChromaEmbeddings(Embeddings):
+            def __init__(self) -> None:
+                self._ef = _ChromaEF()
+
+            def embed_documents(self, texts: list[str]) -> list[list[float]]:
+                return [[float(v) for v in vec] for vec in self._ef(texts)]
+
+            def embed_query(self, text: str) -> list[float]:
+                return [float(v) for v in self._ef([text])[0]]
+
+        _embeddings_instance = _ChromaEmbeddings()
+    return _embeddings_instance
+
+
+class _LazyProxy:
+    """Transparent proxy that defers heavy object creation to first attribute access."""
+    def __init__(self, factory):
+        object.__setattr__(self, "_factory", factory)
+        object.__setattr__(self, "_obj", None)
+
+    def _resolve(self):
+        obj = object.__getattribute__(self, "_obj")
+        if obj is None:
+            factory = object.__getattribute__(self, "_factory")
+            obj = factory()
+            object.__setattr__(self, "_obj", obj)
+        return obj
+
+    def __getattr__(self, name):
+        return getattr(self._resolve(), name)
+
+    def __call__(self, *args, **kwargs):
+        return self._resolve()(*args, **kwargs)
+
+
+llm = _LazyProxy(_get_llm)
+embeddings = _LazyProxy(_get_embeddings)
 
 # ---------------------------------------------------------------------------
 # WhatsApp — Green API
