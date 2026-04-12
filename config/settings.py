@@ -15,6 +15,12 @@ _os.environ["OPENAI_API_KEY"] = _PROXY_KEY
 _os.environ["OPENAI_BASE_URL"] = _PROXY_URL
 _os.environ["OPENAI_API_BASE"] = _PROXY_URL
 
+# LangSmith 可观测性（设置环境变量后自动启用）
+import os as _lsm_os
+if _lsm_os.getenv("LANGSMITH_API_KEY"):
+    _lsm_os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
+    _lsm_os.environ.setdefault("LANGCHAIN_PROJECT", "car-export-agent")
+
 PROJECT_ROOT: Path = Path(__file__).resolve().parent.parent
 
 CHROMA_DB_PATH: Path = PROJECT_ROOT / "rag" / "chroma_db"
@@ -54,20 +60,13 @@ def _get_llm():
 def _get_embeddings():
     global _embeddings_instance
     if _embeddings_instance is None:
-        from langchain_core.embeddings import Embeddings
-        from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as _ChromaEF
-
-        class _ChromaEmbeddings(Embeddings):
-            def __init__(self) -> None:
-                self._ef = _ChromaEF()
-
-            def embed_documents(self, texts: list[str]) -> list[list[float]]:
-                return [[float(v) for v in vec] for vec in self._ef(texts)]
-
-            def embed_query(self, text: str) -> list[float]:
-                return [float(v) for v in self._ef([text])[0]]
-
-        _embeddings_instance = _ChromaEmbeddings()
+        from langchain_openai import OpenAIEmbeddings
+        _embeddings_instance = OpenAIEmbeddings(
+            model="text-embedding-3-large",
+            api_key=OPENAI_API_KEY,
+            base_url=OPENAI_BASE_URL,
+            dimensions=1024,  # 压缩维度，节省存储
+        )
     return _embeddings_instance
 
 

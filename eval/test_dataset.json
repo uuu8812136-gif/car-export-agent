@@ -1,0 +1,102 @@
+[
+  {
+    "question": "What is the CIF price of BYD Seal to Lagos port?",
+    "ground_truth": "The BYD Seal Long Range AWD has a CIF price of USD 25,500 to Lagos port.",
+    "contexts": ["BYD Seal, Long Range AWD, FOB: $24,000, CIF: $25,500, Product ID: BYD-SEAL-002"]
+  },
+  {
+    "question": "I need a 7-seat SUV under $20,000 USD FOB. What do you have?",
+    "ground_truth": "The Chery Tiggo 8 7-seat variant is available at FOB price of USD 16,800, which is under your $20,000 budget.",
+    "contexts": ["Chery Tiggo 8, 7-seat, FOB: $16,800, CIF: $18,200, Product ID: CHR-TG8-006"]
+  },
+  {
+    "question": "What is the FOB price difference between BYD Atto 3 and BYD Dolphin?",
+    "ground_truth": "The BYD Atto 3 Standard Range has a FOB price of USD 18,500, while the BYD Dolphin Standard is USD 14,000. The difference is USD 4,500.",
+    "contexts": ["BYD Atto 3, Standard Range, FOB: $18,500", "BYD Dolphin, Standard, FOB: $14,000"]
+  },
+  {
+    "question": "Do you have any electric vehicles available for export?",
+    "ground_truth": "Yes, we have several EVs: BYD Atto 3 (FOB $18,500), BYD Seal (FOB $24,000), BYD Han EV (FOB $28,000), BYD Dolphin (FOB $14,000), MG4 Electric (FOB $15,200), and MG ZS EV (FOB $17,500).",
+    "contexts": ["BYD Atto 3 EV", "BYD Seal EV", "BYD Han EV", "BYD Dolphin EV", "MG4 Electric", "MG ZS EV"]
+  },
+  {
+    "question": "What is the minimum order quantity for the Geely Coolray?",
+    "ground_truth": "The minimum order quantity for the Geely Coolray 1.5T is 1 unit.",
+    "contexts": ["Geely Coolray, 1.5T, min_order_qty: 1, Product ID: GEL-COOL-009"]
+  },
+  {
+    "question": "Which cars are available between $15,000 and $20,000 FOB?",
+    "ground_truth": "Cars in the $15,000-$20,000 FOB range include: Chery Tiggo 7 Pro ($14,500 - just below), Chery Tiggo 8 ($16,800), MG4 Electric ($15,200), MG ZS EV ($17,500), BYD Atto 3 ($18,500), and Geely Coolray ($13,800 - below range).",
+    "contexts": ["Price range query for $15,000-$20,000 FOB vehicles"]
+  },
+  {
+    "question": "What is the CIF price of SAIC Maxus T90 to Dubai?",
+    "ground_truth": "The SAIC Maxus T90 4WD Diesel has a CIF price of USD 23,500.",
+    "contexts": ["SAIC Maxus T90, 4WD Diesel, FOB: $22,000, CIF: $23,500, Product ID: SAIC-T90-010"]
+  },
+  {
+    "question": "Can you generate a contract for 2 units of BYD Seal to Dubai, buyer is ABC Trading LLC?",
+    "ground_truth": "I can generate a quotation contract for ABC Trading LLC for 2x BYD Seal Long Range AWD. Total FOB value: USD 48,000 (2 × $24,000). CIF total: USD 51,000 (2 × $25,500).",
+    "contexts": ["BYD Seal, FOB: $24,000 per unit, CIF: $25,500 per unit"]
+  },
+  {
+    "question": "What is the product ID for Chery Tiggo 7 Pro?",
+    "ground_truth": "The product ID for Chery Tiggo 7 Pro 2.0T is CHR-TG7P-005.",
+    "contexts": ["Chery Tiggo 7 Pro, 2.0T, Product ID: CHR-TG7P-005, updated: 2024-03-01"]
+  },
+  {
+    "question": "When was the MG4 Electric price last updated?",
+    "ground_truth": "The MG4 Electric price was last updated on 2024-02-15.",
+    "contexts": ["MG4 Electric, Product ID: MG-MG4E-007, update_time: 2024-02-15"]
+  },
+  {
+    "question": "Is the BYD Han EV available for export?",
+    "ground_truth": "Yes, the BYD Han EV 600km range is available for export. FOB price: USD 28,000, CIF price: USD 29,800.",
+    "contexts": ["BYD Han EV, 600km range, available: true, FOB: $28,000, CIF: $29,800"]
+  },
+  {
+    "question": "What are the shipping terms offered?",
+    "ground_truth": "We offer both FOB (Free On Board) and CIF (Cost, Insurance and Freight) pricing for all vehicles.",
+    "contexts": ["All vehicles available with FOB and CIF pricing"]
+  },
+  {
+    "question": "I want the cheapest car you have for export to Africa.",
+    "ground_truth": "The most affordable option is the Geely Coolray 1.5T at FOB USD 13,800 (CIF: $15,000), followed by the BYD Dolphin at FOB USD 14,000.",
+    "contexts": ["Geely Coolray FOB: $13,800", "BYD Dolphin FOB: $14,000"]
+  },
+  {
+    "question": "Do you have any Chery vehicles?",
+    "ground_truth": "Yes, we have two Chery models: Chery Tiggo 7 Pro 2.0T (FOB $14,500) and Chery Tiggo 8 7-seat (FOB $16,800).",
+    "contexts": ["Chery Tiggo 7 Pro, FOB: $14,500", "Chery Tiggo 8, FOB: $16,800"]
+  },
+  {
+    "question": "What SUVs do you have available?",
+    "ground_truth": "Our SUV lineup includes: Chery Tiggo 7 Pro (FOB $14,500), Chery Tiggo 8 (FOB $16,800), MG ZS EV (FOB $17,500), BYD Atto 3 (FOB $18,500), and Geely Coolray (FOB $13,800).",
+    "contexts": ["SUV models in catalog"]
+  },
+  {
+    "question": "What is the price of MG ZS EV?",
+    "ground_truth": "The MG ZS EV Long Range has a FOB price of USD 17,500 and CIF price of USD 18,900. Product ID: MG-ZSEV-008.",
+    "contexts": ["MG ZS EV, Long Range, FOB: $17,500, CIF: $18,900, Product ID: MG-ZSEV-008"]
+  },
+  {
+    "question": "Can I order less than 1 unit minimum?",
+    "ground_truth": "No, the minimum order quantity for all our vehicles is 1 unit.",
+    "contexts": ["All vehicles min_order_qty: 1"]
+  },
+  {
+    "question": "What is the difference between FOB and CIF price?",
+    "ground_truth": "FOB (Free On Board) price covers manufacturing and loading costs. CIF (Cost, Insurance and Freight) includes additional shipping insurance and freight to the destination port, typically USD 1,000-2,000 more than FOB.",
+    "contexts": ["FOB vs CIF pricing explanation"]
+  },
+  {
+    "question": "Do you have any diesel vehicles?",
+    "ground_truth": "Yes, the SAIC Maxus T90 4WD Diesel is available at FOB USD 22,000 (CIF: $23,500). It is our only diesel option.",
+    "contexts": ["SAIC Maxus T90, 4WD Diesel, FOB: $22,000, CIF: $23,500"]
+  },
+  {
+    "question": "What is the BYD Dolphin's product ID and when was it last updated?",
+    "ground_truth": "The BYD Dolphin Standard has Product ID BYD-DOLPH-004 and was last updated on 2024-01-15.",
+    "contexts": ["BYD Dolphin, Product ID: BYD-DOLPH-004, update_time: 2024-01-15"]
+  }
+]

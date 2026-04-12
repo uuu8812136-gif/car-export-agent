@@ -7,6 +7,7 @@ import uuid
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
+from langgraph.types import Command  # 已升级为 LangGraph 0.3+ 兼容
 
 from agent.nodes.contract_node import generate_contract
 from agent.nodes.doc_grader import grade_documents

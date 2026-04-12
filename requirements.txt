@@ -1,15 +1,40 @@
-langgraph==0.2.56
-langchain==0.3.7
-langchain-openai==0.2.8
-langchain-anthropic==0.3.0
-langchain-community==0.3.7
-streamlit==1.40.2
-chromadb==0.5.23
+# Core Agent Framework - 2026
+langgraph>=0.3.0
+langchain>=0.3.20
+langchain-openai>=0.2.14
+langchain-community>=0.3.20
+langchain-core>=0.3.40
+
+# LLM & Embeddings
+openai>=1.60.0
+
+# Vector DB & RAG
+chromadb>=0.6.0
+rank-bm25>=0.2.2
+
+# Fuzzy Matching
+rapidfuzz>=3.10.0
+
+# Data
+pandas>=2.2.3
+numpy>=1.26.0
+
+# PDF
+pypdf>=5.1.0
+
+# API & Web
+fastapi>=0.115.6
+uvicorn[standard]>=0.32.1
+httpx>=0.28.1
+streamlit>=1.43.0
+
+# Config
+python-dotenv>=1.0.1
+pydantic>=2.10.3
+
+# Observability & Eval
+langsmith>=0.2.0
+ragas>=0.2.0
+
+# Runtime
 onnxruntime>=1.17.0
-pandas==2.2.3
-pypdf==5.1.0
-python-dotenv==1.0.1
-pydantic==2.10.3
-fastapi==0.115.6
-uvicorn[standard]==0.32.1
-httpx==0.28.1

@@ -8,7 +8,7 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from agent.state import AgentState
 from config.prompts import RAG_ANSWER_PROMPT
 from config.settings import llm
-from rag.vectorstore import get_vectorstore
+from rag.vectorstore import get_vectorstore, hybrid_search, hyde_search
 
 
 def _get_last_user_message(messages: Sequence[BaseMessage]) -> str:
@@ -111,7 +111,28 @@ def retrieve_and_answer(state: AgentState) -> dict:
             "agent_steps": agent_steps,
         }
 
-    documents = vectorstore.similarity_search(user_query, k=3) if user_query else []
+    if user_query:
+        # Hybrid RAG（向量 + BM25），2026最佳实践
+        raw_results = hybrid_search(user_query, k=4)
+        agent_steps.append(f"RAG: Hybrid 检索返回 {len(raw_results)} 条结果")
+
+        # 如果结果少于 2 条，降级到 HyDE 再试一次
+        if len(raw_results) < 2:
+            raw_results = hyde_search(user_query, k=4)
+            agent_steps.append("RAG: Hybrid 结果不足，启用 HyDE 二次检索")
+
+        # 将 dict 结果转为 Document 对象以复用 _build_retrieved_context
+        from langchain_core.documents import Document as _Doc
+        documents = [
+            _Doc(
+                page_content=r["content"],
+                metadata={"source": r.get("source", ""), "page": r.get("page", 0)},
+            )
+            for r in raw_results
+        ]
+    else:
+        documents = []
+
     retrieved_context, sources = _build_retrieved_context(documents)
 
     if documents:
