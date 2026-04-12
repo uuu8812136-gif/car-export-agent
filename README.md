@@ -2,28 +2,39 @@
 
 # 🚗 Auto Export AI Agent
 
-**The only open-source WhatsApp sales agent built for Chinese automotive exporters**
+**LangGraph-powered sales agent that handles WhatsApp inquiries for automotive exporters — with built-in hallucination prevention.**
 
-*Powered by LangGraph · Three-Step Hallucination Guard · Human-in-the-Loop*
+[![CI](https://img.shields.io/github/actions/workflow/status/uuu8812136-gif/car-export-agent/ci.yml?style=flat-square&label=tests)](https://github.com/uuu8812136-gif/car-export-agent/actions)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![LangGraph](https://img.shields.io/badge/LangGraph-0.3+-orange?style=flat-square)](https://github.com/langchain-ai/langgraph)
+[![LangSmith](https://img.shields.io/badge/LangSmith-Traced-green?style=flat-square)](https://smith.langchain.com)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python&logoColor=white)](https://python.org)
-[![LangGraph](https://img.shields.io/badge/LangGraph-0.3+-orange?logo=chainlink)](https://github.com/langchain-ai/langgraph)
-[![LangSmith](https://img.shields.io/badge/LangSmith-Traced-green?logo=langchain)](https://smith.langchain.com)
-[![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector_DB-purple)](https://trychroma.com)
-[![Streamlit](https://img.shields.io/badge/Streamlit-Demo-red?logo=streamlit)](https://streamlit.io)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
-
-[**Live Demo**](#quick-start) · [**Architecture**](#系统架构) · [**Documentation**](docs/integration_guide.md)
+[架构图](#系统架构) · [快速启动](#快速启动) · [对接文档](docs/integration_guide.md)
 
 </div>
 
 ---
 
-## 项目背景
+## 这个 Agent 能做什么
 
-汽车出口企业每天在 WhatsApp 上接收数百条来自东南亚、中东、非洲买家的询盘，涉及车型参数、FOB 价格、交货周期等高度专业的问题。传统方式依赖销售人员 24 小时人工响应，响应延迟高、信息不一致、漏单风险大。更危险的是，如果 AI 直接接入却缺乏约束，它会"自信地"给出错误价格或做出未授权承诺，引发合同纠纷。
+**场景一：客户深夜发来询价**
 
-本项目针对以上痛点，构建了一套**带防幻觉护栏的销售 AI Agent**：自动处理 80% 的标准询盘，对高风险输出触发三步自反思校验，对低置信度场景自动转人工，确保每一条发出的回复都经过事实核查。
+> 凌晨 2 点，尼日利亚买家在 WhatsApp 发来：*"Hi, BYD Seal CIF price to Lagos port?"*
+>
+> Agent 在 3 秒内回复：BYD Seal Long Range AWD，CIF $25,500，附带 Product ID 和报价更新时间。同时触发三步自反思校验，确认价格来自可溯源数据库，不是 AI 凭空生成。销售人员早上醒来，对话已自动处理完毕。
+
+**场景二：客户问预算范围内的车型**
+
+> *"I need a 7-seat SUV, budget under $20,000 FOB"*
+>
+> Agent 解析价格区间，从产品库中筛选出符合条件的车型列表，附带 FOB/CIF 双价格和最小起订量。置信度不足时，自动暂停并通知销售人工接管。
+
+**场景三：确认订单，生成报价合同**
+
+> *"Contract: 2x Chery Tiggo 8 to Dubai, buyer ABC Trading LLC"*
+>
+> Agent 从对话中提取买方信息、目的港、车型、数量，从价格库查询单价，计算总金额，填充 Markdown 合同模板，生成可下载的报价单文件。
 
 ---
 
