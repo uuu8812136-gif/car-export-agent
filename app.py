@@ -828,7 +828,17 @@ def main() -> None:
 
     render_sidebar()
 
-    tabs = ["💬  在线询盘", "📱  WhatsApp"]
+    # 启动 Telegram bot（每次 session 只启动一次）
+    if "telegram_bot_started" not in st.session_state:
+        import os as _os
+        if _os.getenv("TELEGRAM_BOT_TOKEN"):
+            import threading
+            from telegram.handler import run_polling
+            t = threading.Thread(target=run_polling, daemon=True)
+            t.start()
+        st.session_state.telegram_bot_started = True
+
+    tabs = ["💬  在线询盘", "📱  WhatsApp", "🤖  Telegram"]
     if st.session_state.get("user_role") == "admin":
         tabs.append("🔍  介入审查")
 
@@ -837,9 +847,61 @@ def main() -> None:
         render_chat_tab()
     with tab_results[1]:
         render_whatsapp_tab()
-    if len(tab_results) > 2:
-        with tab_results[2]:
+    with tab_results[2]:
+        _render_telegram_tab()
+    if len(tab_results) > 3:
+        with tab_results[3]:
             _render_admin_tab()
+
+
+def _render_telegram_tab() -> None:
+    """Telegram Bot 实时对话监控面板。"""
+    import os as _os
+    from telegram.handler import load_telegram_history
+
+    st.markdown(
+        '<h2 style="font-size:22px;font-weight:700;color:#1C1C1E;margin-bottom:4px">🤖 Telegram Bot 实时对话</h2>'
+        '<p style="color:#8E8E93;font-size:13px;margin-bottom:16px">真实客户通过 Telegram 发来的询盘，由 AI Agent 自动回复</p>',
+        unsafe_allow_html=True,
+    )
+
+    bot_name = _os.getenv("TELEGRAM_BOT_USERNAME", "ksnzizjwns_bot")
+    token = _os.getenv("TELEGRAM_BOT_TOKEN", "")
+
+    if token:
+        st.success(f"✅ Bot 运行中 — [t.me/{bot_name}](https://t.me/{bot_name})  ← 点击发消息测试")
+    else:
+        st.warning("⚠️ TELEGRAM_BOT_TOKEN 未配置")
+        return
+
+    col_r, _ = st.columns([1, 4])
+    with col_r:
+        if st.button("🔄 刷新", use_container_width=True):
+            st.rerun()
+
+    records = load_telegram_history()
+    if not records:
+        st.info("暂无对话记录，去 Telegram 发条消息试试 👆")
+        return
+
+    st.markdown(f"**共 {len(records)} 条对话**")
+
+    for rec in reversed(records[-20:]):  # 最新20条
+        ts = rec.get("timestamp", "")[:16]
+        username = rec.get("username", "unknown")
+        user_msg = rec.get("user_message", "")
+        agent_reply = rec.get("agent_reply", "")
+
+        with st.expander(f"[{ts}] @{username}: {user_msg[:50]}...", expanded=False):
+            col_u, col_a = st.columns(2)
+            with col_u:
+                st.markdown("**👤 客户消息**")
+                st.text_area("", value=user_msg, height=100, disabled=True,
+                             key=f"tg_u_{ts}_{username}")
+            with col_a:
+                st.markdown("**🤖 Agent 回复**")
+                st.text_area("", value=agent_reply, height=100, disabled=True,
+                             key=f"tg_a_{ts}_{username}")
 
 
 def _render_admin_tab() -> None:
