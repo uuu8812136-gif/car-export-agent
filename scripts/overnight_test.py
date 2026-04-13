@@ -138,7 +138,7 @@ def test_pytest():
     r = subprocess.run(
         [sys.executable, "-m", "pytest", "tests/unit/", "-q", "--tb=short", "--no-header"],
         capture_output=True, text=True, cwd=str(ROOT),
-        env={**os.environ, "PYTHONPATH": f"{ROOT}{os.pathsep}{ROOT / '.pip-packages'}"},
+        env={**os.environ, "PYTHONPATH": f"{ROOT}:{ROOT / '.pip-packages'}"},
         timeout=60
     )
     passed = "failed" not in r.stdout and r.returncode == 0
