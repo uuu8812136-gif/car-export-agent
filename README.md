@@ -16,6 +16,26 @@
 
 ---
 
+## 项目截图
+
+| 登录页 | 询价对话 |
+|--------|---------|
+| ![登录页](docs/screenshots/01_login.png) | ![询价对话](docs/screenshots/02_inquiry_chat.png) |
+
+| WhatsApp 管理面板 | Telegram 监控面板 |
+|------------------|-----------------|
+| ![WhatsApp Manager](docs/screenshots/03_whatsapp_manager.png) | ![Telegram Monitor](docs/screenshots/04_telegram_monitor.png) |
+
+| 人工审核面板 | Telegram 价格查询（移动端）|
+|------------|--------------------------|
+| ![Admin Review](docs/screenshots/05_admin_review.png) | ![Telegram Price Query](docs/screenshots/06_telegram_price_query.jpg) |
+
+| Telegram 合同生成（移动端）| Telegram RAG 产品知识库（移动端）|
+|--------------------------|--------------------------------|
+| ![Telegram Contract](docs/screenshots/07_telegram_contract.jpg) | ![Telegram RAG](docs/screenshots/08_telegram_rag.jpg) |
+
+---
+
 ## 这个 Agent 能做什么
 
 **场景一：客户深夜发来询价**
