@@ -1,1 +1,30 @@
-[]
+[
+  {
+    "timestamp": "2026-04-13T03:48:53",
+    "chat_id": "6809810267",
+    "username": "Kaye",
+    "user_message": "车型推荐",
+    "agent_reply": "当然可以。\n\n我们可以根据您的市场需求，推荐适合出口的中国车型。常见可选品牌包括：\n\n- BYD\n- Chery\n- MG\n- Geely\n- SAIC\n\n一般我们会先根据以下方向来推荐车型：\n\n1. 燃油车还是新能源车  \n2. 轿车、SUV、MPV，还是皮卡  \n3. 您的目标市场国家  \n4. 预算范围  \n5. 用途：零售、出租车、网约车、政府/企业采购，还是车队项目  \n\n例如：\n\n- 如果您想要新能源SUV：可以关注 BYD、Geely、MG 的热门车型\n- 如果您想要性价比高的燃油SUV：Chery 和 Geely 通常比较有竞争力\n- 如果您想要适合城市通勤的小型电动车：BYD 和 SAIC 也有不错选择\n- 如果您想要家用或商务MPV：可以看一些新能源或燃油MPV方案\n\n如果您愿意，我可以直接按您的需求给您做一版推荐清单。\n\n请告诉我这几个信息：\n- 目标国家/目的港\n- 想要的车型类型：轿车 / SUV / MPV / 皮卡\n- 能源类型：燃油 / 混动 / 纯电\n- 预算范围（USD）\n- 采购数量\n\n您回复这些信息后，我可以给您推荐 3–5 款合适车型。\n\n---\n💬 *General guidance — no price database lookup performed. For specific pricing, please ask about a vehicle model and destination.*"
+  },
+  {
+    "timestamp": "2026-04-13T03:55:33",
+    "chat_id": "6809810267",
+    "username": "Kaye",
+    "user_message": "多少钱啊 byd",
+    "agent_reply": "**BYD BYD Atto 3**\n- Variant: Standard Range\n- FOB Price: USD 18500\n- CIF Price: USD 19800\n- Year: 2024\n\n---\n📊 *Source: Verified CSV Database | Product ID: BYD-ATTO3-001 | Updated: 2024-01-15 | Confidence: 90%*"
+  },
+  {
+    "timestamp": "2026-04-13T03:58:25",
+    "chat_id": "6809810267",
+    "username": "Kaye",
+    "user_message": "我预算 2w 美金",
+    "agent_reply": "I'm sorry, but the model you inquired about is **not found** in our verified price catalog.\n\n**Models currently available for export:**\n- **BYD BYD Atto 3** (FOB: USD 18500)\n- **BYD BYD Seal** (FOB: USD 24000)\n- **BYD BYD Han EV** (FOB: USD 28000)\n- **BYD BYD Dolphin** (FOB: USD 14000)\n- **Chery Chery Tiggo 7 Pro** (FOB: USD 14500)\n- **Chery Chery Tiggo 8** (FOB: USD 16800)\n- **MG MG4 Electric** (FOB: USD 15200)\n- **MG MG ZS EV** (FOB: USD 17500)\n- **Geely Geely Coolray** (FOB: USD 13800)\n- **SAIC SAIC Maxus T90** (FOB: USD 22000)\n\n---\n🚫 *No match found. Confidence: 24% (threshold: 70%). Routing to human agent.*"
+  },
+  {
+    "timestamp": "2026-04-13T03:58:30",
+    "chat_id": "6809810267",
+    "username": "Kaye",
+    "user_message": "我预算 2w 美金",
+    "agent_reply": "I'm sorry, but the model you inquired about is **not found** in our verified price catalog.\n\n**Models currently available for export:**\n- **BYD BYD Atto 3** (FOB: USD 18500)\n- **BYD BYD Seal** (FOB: USD 24000)\n- **BYD BYD Han EV** (FOB: USD 28000)\n- **BYD BYD Dolphin** (FOB: USD 14000)\n- **Chery Chery Tiggo 7 Pro** (FOB: USD 14500)\n- **Chery Chery Tiggo 8** (FOB: USD 16800)\n- **MG MG4 Electric** (FOB: USD 15200)\n- **MG MG ZS EV** (FOB: USD 17500)\n- **Geely Geely Coolray** (FOB: USD 13800)\n- **SAIC SAIC Maxus T90** (FOB: USD 22000)\n\n---\n🚫 *No match found. Confidence: 24% (threshold: 70%). Routing to human agent.*"
+  }
+]

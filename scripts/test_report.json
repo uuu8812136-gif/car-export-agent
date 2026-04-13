@@ -1,59 +1,167 @@
 {
-  "generated": "2026-04-13T04:00:01.062410",
-  "rounds_completed": 1,
-  "total_pass": 8,
-  "total_fail": 1,
+  "generated": "2026-04-13T12:01:29.197788",
+  "rounds_completed": 3,
+  "total_pass": 27,
+  "total_fail": 0,
   "results": [
     {
-      "time": "03:59:56",
+      "time": "11:01:05",
       "test": "CSV integrity",
       "status": "PASS",
       "detail": "10 rows OK"
     },
     {
-      "time": "03:59:59",
+      "time": "11:01:08",
       "test": "Price range parse",
       "status": "PASS",
       "detail": "5 cases OK"
     },
     {
-      "time": "03:59:59",
+      "time": "11:01:08",
       "test": "Price filter",
       "status": "PASS",
       "detail": "filter logic OK"
     },
     {
-      "time": "03:59:59",
+      "time": "11:01:08",
       "test": "Module imports",
       "status": "PASS",
       "detail": "6 modules OK"
     },
     {
-      "time": "03:59:59",
+      "time": "11:01:08",
       "test": "Pydantic schema",
       "status": "PASS",
       "detail": "Pydantic schemas OK"
     },
     {
-      "time": "03:59:59",
+      "time": "11:01:08",
       "test": "AgentState fields",
       "status": "PASS",
       "detail": "AgentState OK"
     },
     {
-      "time": "04:00:00",
+      "time": "11:01:10",
       "test": "Telegram API",
       "status": "PASS",
       "detail": "Bot online"
     },
     {
-      "time": "04:00:01",
+      "time": "11:01:15",
       "test": "pytest suite",
-      "status": "FAIL",
-      "detail": ""
+      "status": "PASS",
+      "detail": "20 passed in 2.36s"
     },
     {
-      "time": "04:00:01",
+      "time": "11:01:15",
+      "test": "Git status",
+      "status": "PASS",
+      "detail": "M config/__pycache__/prompts.cpython-313.pyc\n M config/__pyc"
+    },
+    {
+      "time": "11:31:15",
+      "test": "CSV integrity",
+      "status": "PASS",
+      "detail": "10 rows OK"
+    },
+    {
+      "time": "11:31:15",
+      "test": "Price range parse",
+      "status": "PASS",
+      "detail": "5 cases OK"
+    },
+    {
+      "time": "11:31:15",
+      "test": "Price filter",
+      "status": "PASS",
+      "detail": "filter logic OK"
+    },
+    {
+      "time": "11:31:15",
+      "test": "Module imports",
+      "status": "PASS",
+      "detail": "6 modules OK"
+    },
+    {
+      "time": "11:31:15",
+      "test": "Pydantic schema",
+      "status": "PASS",
+      "detail": "Pydantic schemas OK"
+    },
+    {
+      "time": "11:31:15",
+      "test": "AgentState fields",
+      "status": "PASS",
+      "detail": "AgentState OK"
+    },
+    {
+      "time": "11:31:16",
+      "test": "Telegram API",
+      "status": "PASS",
+      "detail": "Bot online"
+    },
+    {
+      "time": "11:31:22",
+      "test": "pytest suite",
+      "status": "PASS",
+      "detail": "20 passed in 2.39s"
+    },
+    {
+      "time": "11:31:22",
+      "test": "Git status",
+      "status": "PASS",
+      "detail": "M config/__pycache__/prompts.cpython-313.pyc\n M config/__pyc"
+    },
+    {
+      "time": "12:01:22",
+      "test": "CSV integrity",
+      "status": "PASS",
+      "detail": "10 rows OK"
+    },
+    {
+      "time": "12:01:22",
+      "test": "Price range parse",
+      "status": "PASS",
+      "detail": "5 cases OK"
+    },
+    {
+      "time": "12:01:22",
+      "test": "Price filter",
+      "status": "PASS",
+      "detail": "filter logic OK"
+    },
+    {
+      "time": "12:01:22",
+      "test": "Module imports",
+      "status": "PASS",
+      "detail": "6 modules OK"
+    },
+    {
+      "time": "12:01:22",
+      "test": "Pydantic schema",
+      "status": "PASS",
+      "detail": "Pydantic schemas OK"
+    },
+    {
+      "time": "12:01:22",
+      "test": "AgentState fields",
+      "status": "PASS",
+      "detail": "AgentState OK"
+    },
+    {
+      "time": "12:01:24",
+      "test": "Telegram API",
+      "status": "PASS",
+      "detail": "Bot online"
+    },
+    {
+      "time": "12:01:29",
+      "test": "pytest suite",
+      "status": "PASS",
+      "detail": "20 passed in 2.27s"
+    },
+    {
+      "time": "12:01:29",
       "test": "Git status",
       "status": "PASS",
       "detail": "M config/__pycache__/prompts.cpython-313.pyc\n M config/__pyc"

@@ -1,0 +1,175 @@
+Starting 5-hour test run. End time: 08:59:55
+============================================================
+
+============================================================
+Round 1 ！ 2026-04-13 03:59:55
+============================================================
+[03:59:56] PASS | CSV integrity ！ 10 rows OK
+[03:59:59] PASS | Price range parse ！ 5 cases OK
+[03:59:59] PASS | Price filter ！ filter logic OK
+[03:59:59] PASS | Module imports ！ 6 modules OK
+[03:59:59] PASS | Pydantic schema ！ Pydantic schemas OK
+[03:59:59] PASS | AgentState fields ！ AgentState OK
+[04:00:00] PASS | Telegram API ！ Bot online
+[04:00:01] FAIL | pytest suite
+[04:00:01] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 1 complete ！ Pass: 8, Fail: 1
+Sleeping 30 min until next round...
+
+============================================================
+Round 2 ！ 2026-04-13 04:30:01
+============================================================
+[04:30:01] PASS | CSV integrity ！ 10 rows OK
+[04:30:01] PASS | Price range parse ！ 5 cases OK
+[04:30:01] PASS | Price filter ！ filter logic OK
+[04:30:01] PASS | Module imports ！ 6 modules OK
+[04:30:01] PASS | Pydantic schema ！ Pydantic schemas OK
+[04:30:01] PASS | AgentState fields ！ AgentState OK
+[04:30:03] PASS | Telegram API ！ Bot online
+[04:30:03] FAIL | pytest suite
+[04:30:03] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 2 complete ！ Pass: 16, Fail: 2
+Sleeping 30 min until next round...
+
+============================================================
+Round 3 ！ 2026-04-13 05:00:03
+============================================================
+[05:00:03] PASS | CSV integrity ！ 10 rows OK
+[05:00:03] PASS | Price range parse ！ 5 cases OK
+[05:00:03] PASS | Price filter ！ filter logic OK
+[05:00:03] PASS | Module imports ！ 6 modules OK
+[05:00:03] PASS | Pydantic schema ！ Pydantic schemas OK
+[05:00:03] PASS | AgentState fields ！ AgentState OK
+[05:00:05] PASS | Telegram API ！ Bot online
+[05:00:05] FAIL | pytest suite
+[05:00:05] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 3 complete ！ Pass: 24, Fail: 3
+Sleeping 30 min until next round...
+
+============================================================
+Round 4 ！ 2026-04-13 05:30:05
+============================================================
+[05:30:05] PASS | CSV integrity ！ 10 rows OK
+[05:30:05] PASS | Price range parse ！ 5 cases OK
+[05:30:05] PASS | Price filter ！ filter logic OK
+[05:30:05] PASS | Module imports ！ 6 modules OK
+[05:30:05] PASS | Pydantic schema ！ Pydantic schemas OK
+[05:30:05] PASS | AgentState fields ！ AgentState OK
+[05:30:07] PASS | Telegram API ！ Bot online
+[05:30:07] FAIL | pytest suite
+[05:30:07] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 4 complete ！ Pass: 32, Fail: 4
+Sleeping 30 min until next round...
+
+============================================================
+Round 5 ！ 2026-04-13 06:00:07
+============================================================
+[06:00:07] PASS | CSV integrity ！ 10 rows OK
+[06:00:07] PASS | Price range parse ！ 5 cases OK
+[06:00:07] PASS | Price filter ！ filter logic OK
+[06:00:07] PASS | Module imports ！ 6 modules OK
+[06:00:07] PASS | Pydantic schema ！ Pydantic schemas OK
+[06:00:07] PASS | AgentState fields ！ AgentState OK
+[06:00:09] PASS | Telegram API ！ Bot online
+[06:00:09] FAIL | pytest suite
+[06:00:09] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 5 complete ！ Pass: 40, Fail: 5
+Sleeping 30 min until next round...
+
+============================================================
+Round 6 ！ 2026-04-13 06:30:09
+============================================================
+[06:30:09] PASS | CSV integrity ！ 10 rows OK
+[06:30:09] PASS | Price range parse ！ 5 cases OK
+[06:30:09] PASS | Price filter ！ filter logic OK
+[06:30:09] PASS | Module imports ！ 6 modules OK
+[06:30:09] PASS | Pydantic schema ！ Pydantic schemas OK
+[06:30:09] PASS | AgentState fields ！ AgentState OK
+[06:30:11] PASS | Telegram API ！ Bot online
+[06:30:11] FAIL | pytest suite
+[06:30:11] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 6 complete ！ Pass: 48, Fail: 6
+Sleeping 30 min until next round...
+
+============================================================
+Round 7 ！ 2026-04-13 07:00:11
+============================================================
+[07:00:11] PASS | CSV integrity ！ 10 rows OK
+[07:00:11] PASS | Price range parse ！ 5 cases OK
+[07:00:11] PASS | Price filter ！ filter logic OK
+[07:00:11] PASS | Module imports ！ 6 modules OK
+[07:00:11] PASS | Pydantic schema ！ Pydantic schemas OK
+[07:00:11] PASS | AgentState fields ！ AgentState OK
+[07:00:13] PASS | Telegram API ！ Bot online
+[07:00:13] FAIL | pytest suite
+[07:00:13] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 7 complete ！ Pass: 56, Fail: 7
+Sleeping 30 min until next round...
+
+============================================================
+Round 8 ！ 2026-04-13 07:30:13
+============================================================
+[07:30:13] PASS | CSV integrity ！ 10 rows OK
+[07:30:13] PASS | Price range parse ！ 5 cases OK
+[07:30:13] PASS | Price filter ！ filter logic OK
+[07:30:13] PASS | Module imports ！ 6 modules OK
+[07:30:13] PASS | Pydantic schema ！ Pydantic schemas OK
+[07:30:13] PASS | AgentState fields ！ AgentState OK
+[07:30:15] PASS | Telegram API ！ Bot online
+[07:30:16] FAIL | pytest suite
+[07:30:16] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 8 complete ！ Pass: 64, Fail: 8
+Sleeping 30 min until next round...
+
+============================================================
+Round 9 ！ 2026-04-13 08:00:16
+============================================================
+[08:00:16] PASS | CSV integrity ！ 10 rows OK
+[08:00:16] PASS | Price range parse ！ 5 cases OK
+[08:00:16] PASS | Price filter ！ filter logic OK
+[08:00:16] PASS | Module imports ！ 6 modules OK
+[08:00:16] PASS | Pydantic schema ！ Pydantic schemas OK
+[08:00:16] PASS | AgentState fields ！ AgentState OK
+[08:00:17] PASS | Telegram API ！ Bot online
+[08:00:17] FAIL | pytest suite
+[08:00:17] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 9 complete ！ Pass: 72, Fail: 9
+Sleeping 30 min until next round...
+
+============================================================
+Round 10 ！ 2026-04-13 08:30:17
+============================================================
+[08:30:17] PASS | CSV integrity ！ 10 rows OK
+[08:30:17] PASS | Price range parse ！ 5 cases OK
+[08:30:17] PASS | Price filter ！ filter logic OK
+[08:30:17] PASS | Module imports ！ 6 modules OK
+[08:30:17] PASS | Pydantic schema ！ Pydantic schemas OK
+[08:30:17] PASS | AgentState fields ！ AgentState OK
+[08:30:19] PASS | Telegram API ！ Bot online
+[08:30:19] FAIL | pytest suite
+[08:30:20] PASS | Git status ！ M config/__pycache__/prompts.cpython-313.pyc
+ M config/__pyc
+
+Round 10 complete ！ Pass: 80, Fail: 10
+Sleeping 30 min until next round...
+
+============================================================
+5-hour test complete. Total Pass: 80, Fail: 10
