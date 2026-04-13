@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 import random
 from datetime import datetime
 from pathlib import Path
@@ -30,6 +31,18 @@ def _messages_to_text(messages: List[BaseMessage]) -> str:
 
 def _extract_json_object(text: str) -> Dict[str, Any]:
     text = text.strip()
+
+    # Try markdown code fence first (```json ... ```)
+    fence_match = re.search(r'```(?:json)?\s*(\{[\s\S]*?\})\s*```', text)
+    if fence_match:
+        try:
+            parsed = json.loads(fence_match.group(1))
+            if isinstance(parsed, dict):
+                return parsed
+        except json.JSONDecodeError:
+            pass
+
+    # Try direct JSON parse
     try:
         parsed = json.loads(text)
         if isinstance(parsed, dict):
@@ -37,6 +50,7 @@ def _extract_json_object(text: str) -> Dict[str, Any]:
     except json.JSONDecodeError:
         pass
 
+    # Try extracting { ... } substring
     start = text.find("{")
     end = text.rfind("}")
     if start != -1 and end != -1 and end > start:

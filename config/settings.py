@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
 import os
 from pathlib import Path
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 # 优先读 Streamlit Cloud secrets，其次读 .env，最后用硬编码默认值
 def _get_secret(key: str, default: str = "") -> str:
@@ -19,8 +22,11 @@ def _get_secret(key: str, default: str = "") -> str:
         pass
     return os.getenv(key, default)
 
-_PROXY_KEY = _get_secret("OPENAI_API_KEY", "sk-b9ede3798a406b316e96984687f3040d2ac80a723b3cd3681a4d9d776c283336")
-_PROXY_URL = _get_secret("OPENAI_BASE_URL", "https://hk.ticketpro.cc/v1")
+_PROXY_KEY = _get_secret("OPENAI_API_KEY", "")
+_PROXY_URL = _get_secret("OPENAI_BASE_URL", "")
+
+if not _PROXY_KEY:
+    logger.warning("OPENAI_API_KEY not set — LLM features will fail. Set it in .env or environment.")
 
 import os as _os
 _os.environ["OPENAI_API_KEY"] = _PROXY_KEY
@@ -47,11 +53,8 @@ CONTRACTS_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 CONTRACTS_TEMPLATE_PATH.parent.mkdir(parents=True, exist_ok=True)
 
 # LLM 配置（懒加载：模块导入时不实例化，等首次调用时才创建）
-OPENAI_API_KEY: str = os.getenv(
-    "OPENAI_API_KEY",
-    "sk-b9ede3798a406b316e96984687f3040d2ac80a723b3cd3681a4d9d776c283336",
-)
-OPENAI_BASE_URL: str = os.getenv("OPENAI_BASE_URL", "https://hk.ticketpro.cc/v1")
+OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
+OPENAI_BASE_URL: str = os.getenv("OPENAI_BASE_URL", "")
 
 _llm_instance = None
 _embeddings_instance = None

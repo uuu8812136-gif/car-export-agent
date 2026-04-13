@@ -126,6 +126,18 @@ def run_agent(
     human_intervention_requested: bool = False,
 ) -> tuple[str, list[str], dict]:
     try:
+        # Input validation
+        if not user_message or not user_message.strip():
+            return "Please enter a message.", [], {"contract_path": "", "contract_data": {}, "hallucination_status": ""}
+
+        from config.constants import MAX_MESSAGE_LENGTH
+        if len(user_message) > MAX_MESSAGE_LENGTH:
+            return (
+                f"Message too long ({len(user_message)} chars). Please keep under {MAX_MESSAGE_LENGTH} characters.",
+                [],
+                {"contract_path": "", "contract_data": {}, "hallucination_status": ""},
+            )
+
         normalized_history: list[BaseMessage] = []
 
         for item in chat_history:

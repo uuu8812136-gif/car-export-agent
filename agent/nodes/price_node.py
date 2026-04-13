@@ -103,8 +103,21 @@ def _get_last_user_message(state: AgentState) -> str:
 
 
 def _load_prices() -> pd.DataFrame:
+    if not PRICES_CSV_PATH.exists():
+        import logging
+        logging.getLogger(__name__).error(f"Price database not found: {PRICES_CSV_PATH}")
+        raise FileNotFoundError(f"Price database not found: {PRICES_CSV_PATH}")
+
     df = pd.read_csv(PRICES_CSV_PATH)
     df.columns = [str(c).strip() for c in df.columns]
+
+    required_cols = ["model_name", "brand", "fob_price_usd", "cif_price_usd"]
+    missing = [c for c in required_cols if c not in df.columns]
+    if missing:
+        import logging
+        logging.getLogger(__name__).error(f"prices.csv missing columns: {missing}")
+        raise ValueError(f"prices.csv missing required columns: {missing}")
+
     return df.fillna("")
 
 

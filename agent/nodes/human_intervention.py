@@ -70,8 +70,9 @@ def check_human_intervention(state: AgentState) -> dict[str, Any]:
                 approved=True,
                 sync_to_kb=True,
             )
-        except Exception:
-            pass
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning(f"Failed to update intervention status: {e}")
     else:
         agent_steps.append("✅ Human review completed (no edits)")
 
@@ -103,6 +104,6 @@ def _sync_to_knowledge_base(content: str, state: AgentState) -> None:
         )
         vs = get_vectorstore()
         vs.add_documents([doc])
-    except Exception:
-        # Non-critical: KB sync failure should not block the response
-        pass
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Knowledge base sync failed: {e}")
