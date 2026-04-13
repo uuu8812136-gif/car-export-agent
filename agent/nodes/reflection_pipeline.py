@@ -112,19 +112,52 @@ def run_reflection_pipeline(state: AgentState) -> dict[str, Any]:
     retrieved_context = str(state.get("retrieved_context", "") or "")
     price_result_str = str(state.get("price_result", {}) or {})
 
+    # ── Speed optimization: skip reflection for high-confidence price queries ──
+    price_confidence = float(state.get("price_confidence_score", 0.0) or 0.0)
+    intent = str(state.get("intent", "") or "")
+
+    if price_confidence >= 0.90 and intent == "price_query":
+        current_steps.append(f"Reflection pipeline: SKIPPED (price confidence {price_confidence*100:.0f}% ≥ 90%)")
+        auto_log = ReflectionLog(
+            step1_fact_check=FactCheckResult(
+                passed=True, error_type="ok",
+                correction_plan="",
+                trigger_condition="high_confidence_skip"
+            ),
+            step2_compliance=ComplianceCheckResult(
+                passed=True, error_type="ok",
+                correction_plan="",
+                trigger_condition="high_confidence_skip"
+            ),
+            step3_upsell=UpsellAnalysis(
+                should_upsell=False, recommended_model="", upsell_reason=""
+            ),
+            overall_passed=True,
+            retry_needed=False,
+            strictness_level=strictness,
+        )
+        reflection_log.append(auto_log.model_dump())
+        return {
+            "needs_retry": False,
+            "reflection_count": 0,
+            "hallucination_status": "verified",
+            "reflection_log": reflection_log,
+            "agent_steps": current_steps,
+        }
+
     # Initialise structured-output LLMs lazily (avoid import-time API calls)
     fact_check_llm = llm.with_structured_output(FactCheckResult)
     compliance_llm = llm.with_structured_output(ComplianceCheckResult)
     upsell_llm = llm.with_structured_output(UpsellAnalysis)
 
-    # Max retries guard
+    # Max retries guard — route to human review instead of force-pass
     if current_retry >= 2:
-        current_steps.append("Reflection pipeline: max retries reached — force pass")
+        current_steps.append("Reflection pipeline: max retries reached — routing to human review")
         default_log = ReflectionLog(
-            step1_fact_check=FactCheckResult(passed=True, error_type="ok", correction_plan="", trigger_condition="max retries"),
-            step2_compliance=ComplianceCheckResult(passed=True, error_type="ok", correction_plan="", trigger_condition="max retries"),
+            step1_fact_check=FactCheckResult(passed=False, error_type="max_retries", correction_plan="Manual review required", trigger_condition="max retries exceeded"),
+            step2_compliance=ComplianceCheckResult(passed=False, error_type="max_retries", correction_plan="Manual review required", trigger_condition="max retries exceeded"),
             step3_upsell=UpsellAnalysis(should_upsell=False, recommended_model="", upsell_reason=""),
-            overall_passed=True,
+            overall_passed=False,
             retry_needed=False,
             strictness_level=strictness,
         )
@@ -132,7 +165,8 @@ def run_reflection_pipeline(state: AgentState) -> dict[str, Any]:
         return {
             "needs_retry": False,
             "reflection_count": current_retry,
-            "hallucination_status": "reviewed",
+            "hallucination_status": "requires_review",
+            "needs_human_review": True,  # Route to human instead of force-pass
             "reflection_log": reflection_log,
             "agent_steps": current_steps,
         }

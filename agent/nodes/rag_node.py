@@ -8,7 +8,7 @@ from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from agent.state import AgentState
 from config.prompts import RAG_ANSWER_PROMPT
 from config.settings import llm
-from rag.vectorstore import get_vectorstore, hybrid_search, hyde_search
+from rag.vectorstore import get_vectorstore, hybrid_search, hyde_search, is_vectorstore_ready
 
 
 def _get_last_user_message(messages: Sequence[BaseMessage]) -> str:
@@ -101,10 +101,13 @@ def retrieve_and_answer(state: AgentState) -> dict:
     agent_steps = list(state.get("agent_steps", []))
     user_query = _get_last_user_message(messages)
 
-    vectorstore = get_vectorstore()
-    if vectorstore is None:
-        draft_answer = "Product manual not loaded yet"
-        agent_steps.append("RAG skipped: vectorstore not initialized")
+    if not is_vectorstore_ready():
+        draft_answer = (
+            "Our product knowledge base is currently being set up. "
+            "For pricing and availability, please ask about specific models "
+            "and I'll check our price database directly."
+        )
+        agent_steps.append("RAG: Knowledge base empty — skipped retrieval (no LLM calls)")
         return {
             "draft_answer": draft_answer,
             "retrieved_context": "",
@@ -116,10 +119,13 @@ def retrieve_and_answer(state: AgentState) -> dict:
         raw_results = hybrid_search(user_query, k=4)
         agent_steps.append(f"RAG: Hybrid 检索返回 {len(raw_results)} 条结果")
 
-        # 如果结果少于 2 条，降级到 HyDE 再试一次
-        if len(raw_results) < 2:
+        # Only try HyDE if hybrid search found SOME results but not enough
+        # If 0 results, KB is likely empty — don't waste an LLM call on HyDE
+        if 0 < len(raw_results) < 2:
             raw_results = hyde_search(user_query, k=4)
             agent_steps.append("RAG: Hybrid 结果不足，启用 HyDE 二次检索")
+        elif len(raw_results) == 0:
+            agent_steps.append("RAG: 知识库无匹配内容，跳过 HyDE")
 
         # 将 dict 结果转为 Document 对象以复用 _build_retrieved_context
         from langchain_core.documents import Document as _Doc
