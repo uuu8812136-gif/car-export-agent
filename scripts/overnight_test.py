@@ -13,8 +13,13 @@ from pathlib import Path
 from datetime import datetime
 
 ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / ".pip-packages"))
+
+# bash 里 /h/ 等价于 H:/ ，但 subprocess 是 Windows 进程需要真实路径
+# H:/car-export-agent 正斜杠写法 Windows 也认识
+WIN_ROOT = Path("H:/car-export-agent") if Path("H:/car-export-agent").exists() else ROOT
+
+sys.path.insert(0, str(WIN_ROOT))
+sys.path.insert(0, str(WIN_ROOT / ".pip-packages"))
 
 os.environ.update({
     "OPENAI_API_KEY": "sk-b9ede3798a406b316e96984687f3040d2ac80a723b3cd3681a4d9d776c283336",
@@ -47,7 +52,7 @@ def save_report(round_n, total_pass, total_fail):
 
 def test_csv_integrity():
     import pandas as pd
-    df = pd.read_csv(ROOT / "data" / "prices.csv")
+    df = pd.read_csv(WIN_ROOT / "data" / "prices.csv")
     required = ["model_name", "brand", "fob_price_usd", "cif_price_usd", "product_id", "update_time"]
     missing = [c for c in required if c not in df.columns]
     if missing:
@@ -137,8 +142,8 @@ def test_telegram_api():
 def test_pytest():
     r = subprocess.run(
         [sys.executable, "-m", "pytest", "tests/unit/", "-q", "--tb=short", "--no-header"],
-        capture_output=True, text=True, cwd=str(ROOT),
-        env={**os.environ, "PYTHONPATH": f"{ROOT}:{ROOT / '.pip-packages'}"},
+        capture_output=True, text=True, cwd=str(WIN_ROOT),
+        env={**os.environ, "PYTHONPATH": f"{WIN_ROOT}{os.pathsep}{WIN_ROOT / '.pip-packages'}"},
         timeout=60
     )
     passed = "failed" not in r.stdout and r.returncode == 0
@@ -147,7 +152,7 @@ def test_pytest():
     return passed, summary
 
 def test_git_status():
-    r = subprocess.run(["git", "status", "--short"], capture_output=True, text=True, cwd=str(ROOT))
+    r = subprocess.run(["git", "status", "--short"], capture_output=True, text=True, cwd=str(WIN_ROOT))
     dirty = r.stdout.strip()
     return True, f"{'clean' if not dirty else dirty[:60]}"
 
