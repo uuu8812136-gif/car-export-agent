@@ -18,3 +18,9 @@ contracts/output/
 
 # 评估结果
 eval/results/
+
+# 编辑器临时文件
+*.tmp.*
+*.tmp
+_ui_prompt.txt
+.gsd/
