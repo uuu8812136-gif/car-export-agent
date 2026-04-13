@@ -11,6 +11,8 @@ __pycache__/
 data/price_cache.db
 data/intervention_log.json
 data/whatsapp_history.json
+data/telegram_history.json
+data/telegram_offset.txt
 rag/chroma_db/
 
 # 合同输出
@@ -24,3 +26,6 @@ eval/results/
 *.tmp
 _ui_prompt.txt
 .gsd/
+scripts/.tg_session
+scripts/.tg_phone_hash
+data/price_cache.db

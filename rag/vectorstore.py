@@ -100,8 +100,11 @@ def hybrid_search(query: str, k: int = 5) -> list[dict]:
     """
     from rank_bm25 import BM25Okapi
 
-    # 向量检索
-    vector_results = search_documents(query, k=k)
+    # 向量检索（embeddings API 不可用时静默降级到 BM25）
+    try:
+        vector_results = search_documents(query, k=k)
+    except Exception:
+        vector_results = []
 
     # BM25 关键词检索（从已有向量库的文档集中构建）
     try:
@@ -169,5 +172,8 @@ def hyde_search(query: str, k: int = 5, llm=None) -> list[dict]:
     except Exception:
         enhanced_query = query  # fallback to original query
 
-    # 用生成的假设答案做向量检索
-    return search_documents(enhanced_query, k=k)
+    # 用生成的假设答案做向量检索（embeddings 不可用时降级到关键词）
+    try:
+        return search_documents(enhanced_query, k=k)
+    except Exception:
+        return hybrid_search(enhanced_query, k=k)

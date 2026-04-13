@@ -25,8 +25,29 @@ def _safe_str(value: Any) -> str:
     return str(value).strip()
 
 
+# 中文车名 → 英文，让 fuzzy match 能对上 CSV 里的英文名
+_CN_ALIASES: dict[str, str] = {
+    "海豹": "Seal", "海豚": "Dolphin", "汉": "Han EV", "元": "Yuan",
+    "秦": "Qin", "唐": "Tang", "宋": "Song", "比亚迪": "BYD",
+    "星越": "Coolray", "帝豪": "Emgrand", "吉利": "Geely",
+    "哈弗": "Haval", "长城": "GWM", "奇瑞": "Chery",
+    "瑞虎": "Tiggo", "名爵": "MG", "荣威": "Roewe",
+    "五菱": "Wuling", "长安": "Changan",
+}
+
+
+def _translate_cn(text: str) -> str:
+    """把文本中的中文车名替换成英文。"""
+    for cn, en in _CN_ALIASES.items():
+        text = text.replace(cn, en)
+    return text
+
+
 def _normalize(text: str) -> str:
-    return re.sub(r"\s+", " ", _safe_str(text).lower()).strip()
+    translated = _translate_cn(_safe_str(text))
+    # 去掉翻译后剩余的中文字符，只保留英文/数字/空格/标点
+    cleaned = re.sub(r'[\u4e00-\u9fff]+', ' ', translated)
+    return re.sub(r"\s+", " ", cleaned.lower()).strip()
 
 
 import re as _re
@@ -145,15 +166,18 @@ def _fuzzy_match(query: str, df: pd.DataFrame) -> tuple[pd.Series | None, float]
         best_idx = best[2]
         best_score = best[1]
 
-    # Also try brand matching and combine
+    # Also try matching against "brand + model_name" combined (e.g. "byd seal")
     if "brand" in df.columns:
-        brand_choices = {idx: _normalize(str(v)) for idx, v in df["brand"].items()}
-        brand_best = fuzz_process.extractOne(
-            norm_query, brand_choices, scorer=fuzz.WRatio, score_cutoff=0,
+        full_choices = {
+            idx: _normalize(f"{r.get('brand','')} {r.get('model_name','')}")
+            for idx, r in df.iterrows()
+        }
+        full_best = fuzz_process.extractOne(
+            norm_query, full_choices, scorer=fuzz.WRatio, score_cutoff=0,
         )
-        if brand_best is not None and brand_best[1] > best_score:
-            best_idx = brand_best[2]
-            best_score = brand_best[1]
+        if full_best is not None and full_best[1] > best_score:
+            best_idx = full_best[2]
+            best_score = full_best[1]
 
     if best_idx is not None:
         return df.loc[best_idx], best_score

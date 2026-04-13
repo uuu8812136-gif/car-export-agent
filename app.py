@@ -190,7 +190,7 @@ def inject_css() -> None:
             border-radius: var(--radius-xl);
             padding: var(--space-xxxl) var(--space-xxl);
             margin: -1rem -0.5rem 0 -0.5rem;
-            min-height: 92vh;
+            min-height: auto;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
         }}
@@ -1328,15 +1328,8 @@ def main() -> None:
 
     render_sidebar()
 
-    # Start Telegram bot (once per session)
-    if "telegram_bot_started" not in st.session_state:
-        import os as _os
-        if _os.getenv("TELEGRAM_BOT_TOKEN"):
-            import threading
-            from telegram.handler import run_polling
-            t = threading.Thread(target=run_polling, daemon=True)
-            t.start()
-        st.session_state.telegram_bot_started = True
+    # Telegram bot 改为独立进程运行 (scripts/run_telegram.py)
+    # 不再在 Streamlit 里启动轮询，避免多进程重复回复
 
     tabs = ["💬  Inquiry Chat", "📱  WhatsApp", "🤖  Telegram"]
     if st.session_state.get("user_role") == "admin":

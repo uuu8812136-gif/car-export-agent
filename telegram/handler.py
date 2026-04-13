@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
@@ -19,9 +20,16 @@ from config.settings import PROJECT_ROOT
 _TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 _API = f"https://api.telegram.org/bot{_TOKEN}"
 _HISTORY_FILE: Path = PROJECT_ROOT / "data" / "telegram_history.json"
+_OFFSET_FILE: Path = PROJECT_ROOT / "data" / "telegram_offset.txt"
 
 # Per-chat conversation history: {chat_id: [{"role": ..., "content": ...}]}
 _chat_histories: dict[str, list[dict]] = {}
+
+# 线程锁：防止多个轮询线程同时运行
+_polling_lock = threading.Lock()
+
+# 已处理的 update_id 集合：去重安全网
+_processed_update_ids: set[int] = set()
 
 
 # ── Telegram API helpers ────────────────────────────────────────────
@@ -86,6 +94,29 @@ def _append_to_history_file(entry: dict) -> None:
 
 def load_telegram_history() -> list[dict]:
     return _load_history_file()
+
+
+# ── Offset persistence ─────────────────────────────────────────────
+
+def _load_offset() -> int:
+    """从文件读取上次处理到的偏移量，文件不存在或损坏返回0。"""
+    try:
+        if _OFFSET_FILE.exists():
+            text = _OFFSET_FILE.read_text(encoding="utf-8").strip()
+            if text:
+                return int(text)
+    except (ValueError, OSError):
+        pass
+    return 0
+
+
+def _save_offset(offset: int) -> None:
+    """把当前偏移量写入文件，下次启动可以接着读。"""
+    try:
+        _OFFSET_FILE.parent.mkdir(parents=True, exist_ok=True)
+        _OFFSET_FILE.write_text(str(offset), encoding="utf-8")
+    except OSError:
+        pass
 
 
 # ── Message processing ──────────────────────────────────────────────
@@ -159,16 +190,36 @@ def process_message(update: dict) -> None:
 
 def run_polling() -> None:
     """Long-polling loop. Run this as a background thread or separate process."""
-    print(f"[Telegram] Bot started — @{os.getenv('TELEGRAM_BOT_USERNAME', 'bot')}")
-    print(f"[Telegram] Send messages at: t.me/{os.getenv('TELEGRAM_BOT_USERNAME', 'bot')}")
+    # 第二层保险：线程锁，防止多个轮询同时跑
+    if not _polling_lock.acquire(blocking=False):
+        print("[Telegram] 轮询已在运行，跳过重复启动。")
+        return
 
-    offset = 0
-    while True:
-        updates = _get_updates(offset=offset)
-        for update in updates:
-            offset = update["update_id"] + 1
-            try:
-                process_message(update)
-            except Exception as e:
-                print(f"[Telegram] Error processing update: {e}")
-        time.sleep(0.5)
+    try:
+        print(f"[Telegram] Bot started — @{os.getenv('TELEGRAM_BOT_USERNAME', 'bot')}")
+        print(f"[Telegram] Send messages at: t.me/{os.getenv('TELEGRAM_BOT_USERNAME', 'bot')}")
+
+        # 第一层保险：从文件恢复上次的偏移量
+        offset = _load_offset()
+
+        while True:
+            updates = _get_updates(offset=offset)
+            for update in updates:
+                uid = update["update_id"]
+                offset = uid + 1
+                _save_offset(offset)
+
+                # 第三层保险：跳过已处理的消息ID
+                if uid in _processed_update_ids:
+                    continue
+                _processed_update_ids.add(uid)
+                if len(_processed_update_ids) > 10000:
+                    _processed_update_ids.clear()
+
+                try:
+                    process_message(update)
+                except Exception as e:
+                    print(f"[Telegram] Error processing update: {e}")
+            time.sleep(0.5)
+    finally:
+        _polling_lock.release()

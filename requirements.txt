@@ -38,3 +38,7 @@ ragas>=0.2.0
 
 # Runtime
 onnxruntime>=1.17.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
